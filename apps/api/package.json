@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node --env-file=.env --import tsx/esm --watch src/index.ts",
     "build": "tsup",
-    "test": "vitest run"
+    "test": "vp test"
   },
   "dependencies": {
     "contract": "workspace:*",
@@ -21,6 +21,6 @@
     "typescript": "catalog:",
     "tsx": "catalog:",
     "tsup": "catalog:",
-    "vitest": "catalog:"
+    "vite-plus": "catalog:"
   }
 }
