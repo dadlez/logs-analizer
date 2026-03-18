@@ -117,5 +117,41 @@ Run `vp run api#dev website#dev` from root (or `cd apps/api && vp dev` / `cd app
 
 ### Database Schema
 
-To be filled in after `curl http://localhost:3001/api/schema`:
-Run the API first: `cd apps/api && vp dev`
+Two tables discovered via `GET /api/schema`:
+
+**`audit_log`** (2926 rows) — main audit log
+| Column | Type | Notes |
+|---|---|---|
+| `id` | integer | PK |
+| `organization_id` | uuid | |
+| `user_id` | uuid | |
+| `user_email` | varchar | |
+| `type` | integer | `Type` enum: Added=1, Deleted=2, Modified=3 |
+| `entity_type` | integer | `EntityType` enum |
+| `created_date` | timestamp | Event timestamp (NOT `created_at`) |
+| `old_values` / `new_values` | text | JSON payloads |
+| `affected_columns` | text | |
+| `primary_key` | varchar | Entity's PK (contract number for entity_type=1) |
+| `entity_id` | uuid | |
+| `parent_id` | uuid | |
+| `correlation_id` | uuid | Groups related events |
+| `sub_unit_id` | uuid | |
+
+**`document_header`** (547 rows) — contract/annex reference
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid | PK |
+| `number` | varchar | Document number |
+| `document_type` | smallint | 1=ContractHeader, 2=AnnexHeader |
+| `parent_id` | uuid | Links annexes to contracts |
+| `organization_id` | uuid | |
+| `created_date` / `deleted_date` | timestamp | |
+
+### Column mapping (API params → DB columns)
+
+| API/frontend concept | DB column |
+|---|---|
+| `module` filter | `entity_type` (integer, cast `::integer`) |
+| `event_type` filter | `type` (integer, cast `::integer`) |
+| `action_type` (history) | `type` |
+| `contract_number` (history response) | `primary_key` CASE WHEN entity_type=1 |

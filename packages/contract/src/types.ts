@@ -60,7 +60,7 @@ export interface CorrelationDetailResponse {
 
 // Analytics
 export interface ModuleAnalytics {
-  module: string;
+  entity_type: number;
   event_count: number;
   event_types: string[];
   unique_correlations: number;

@@ -28,7 +28,7 @@ export function buildCorrelationsQuery(
   const offset = (page - 1) * limit;
 
   const filters: Array<{ field: string; value: unknown }> = [];
-  if (params.module) filters.push({ field: "module", value: params.module });
+  if (params.module) filters.push({ field: "entity_type", value: params.module });
   if (params.from) filters.push({ field: "timestamp_from", value: params.from });
   if (params.to) filters.push({ field: "timestamp_to", value: params.to });
 
@@ -103,10 +103,10 @@ export function correlationsRoute(fastify: FastifyInstance, db: DbClient) {
     for (const f of q.filters) {
       if (f.field === "timestamp_from") {
         params.push(f.value);
-        conditions.push(`created_at >= $${params.length}`);
+        conditions.push(`created_date >= $${params.length}`);
       } else if (f.field === "timestamp_to") {
         params.push(f.value);
-        conditions.push(`created_at <= $${params.length}`);
+        conditions.push(`created_date <= $${params.length}`);
       } else {
         params.push(f.value);
         conditions.push(`"${f.field}" = $${params.length}`);
@@ -120,10 +120,10 @@ export function correlationsRoute(fastify: FastifyInstance, db: DbClient) {
       SELECT
         correlation_id,
         COUNT(*)::int AS event_count,
-        array_agg(DISTINCT module) FILTER (WHERE module IS NOT NULL) AS modules,
-        MIN(created_at) AS started_at,
-        MAX(created_at) AS ended_at,
-        EXTRACT(EPOCH FROM (MAX(created_at) - MIN(created_at)) * 1000)::int AS duration_ms
+        array_agg(DISTINCT entity_type::text) FILTER (WHERE entity_type IS NOT NULL) AS modules,
+        MIN(created_date) AS started_at,
+        MAX(created_date) AS ended_at,
+        EXTRACT(EPOCH FROM (MAX(created_date) - MIN(created_date)) * 1000)::int AS duration_ms
       FROM "${q.table}"
       ${whereClause}
       GROUP BY correlation_id
@@ -169,18 +169,22 @@ export function correlationsRoute(fastify: FastifyInstance, db: DbClient) {
     }
 
     const events = await db.unsafe(
-      `SELECT * FROM "${table}" WHERE correlation_id = $1 ORDER BY created_at ASC`,
+      `SELECT * FROM "${table}" WHERE correlation_id = $1 ORDER BY created_date ASC`,
       [id],
     );
 
     const modules = [
-      ...new Set((events as Record<string, unknown>[]).map((e) => e["module"]).filter(Boolean)),
+      ...new Set(
+        (events as Record<string, unknown>[]).map((e) => String(e["entity_type"])).filter(Boolean),
+      ),
     ] as string[];
     const eventTypes = [
-      ...new Set((events as Record<string, unknown>[]).map((e) => e["event_type"]).filter(Boolean)),
+      ...new Set(
+        (events as Record<string, unknown>[]).map((e) => String(e["type"])).filter(Boolean),
+      ),
     ] as string[];
     const flow = (events as Record<string, unknown>[])
-      .map((e) => (e["event_type"] as string) ?? "")
+      .map((e) => (e["type"] as string) ?? "")
       .filter(Boolean);
 
     return reply.send({

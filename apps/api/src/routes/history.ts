@@ -29,8 +29,7 @@ export function buildHistoryQuery(params: HistoryQueryParams): HistoryQueryDescr
   if (params.from) filters.push({ field: "timestamp_from", value: params.from });
   if (params.to) filters.push({ field: "timestamp_to", value: params.to });
   if (params.user_email) filters.push({ field: "user_email", value: params.user_email });
-  if (params.action_type !== undefined)
-    filters.push({ field: "action_type", value: params.action_type });
+  if (params.action_type !== undefined) filters.push({ field: "type", value: params.action_type });
 
   return {
     table: params.table,
@@ -103,16 +102,16 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
     for (const f of q.filters) {
       if (f.field === "timestamp_from") {
         params.push(f.value);
-        conditions.push(`MIN(created_at) >= $${params.length}`);
+        conditions.push(`MIN(created_date) >= $${params.length}`);
       } else if (f.field === "timestamp_to") {
         params.push(f.value);
-        conditions.push(`MIN(created_at) <= $${params.length}`);
+        conditions.push(`MIN(created_date) <= $${params.length}`);
       } else if (f.field === "user_email") {
         params.push(f.value);
         conditions.push(`user_email ILIKE $${params.length}`);
-      } else if (f.field === "action_type") {
+      } else if (f.field === "type") {
         params.push(f.value);
-        conditions.push(`action_type = $${params.length}`);
+        conditions.push(`MAX(type) = $${params.length}`);
       }
     }
 
@@ -124,10 +123,10 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
       SELECT
         correlation_id,
         MAX(user_email) AS user_email,
-        MAX(action_type)::int AS action_type,
-        MAX(CASE WHEN entity_type = 1 THEN contract_number ELSE NULL END) AS contract_number,
-        MIN(created_at) AS started_at,
-        EXTRACT(EPOCH FROM (MAX(created_at) - MIN(created_at)) * 1000)::int AS duration_ms,
+        MAX(type)::int AS action_type,
+        MAX(CASE WHEN entity_type = 1 THEN primary_key ELSE NULL END) AS contract_number,
+        MIN(created_date) AS started_at,
+        EXTRACT(EPOCH FROM (MAX(created_date) - MIN(created_date)) * 1000)::int AS duration_ms,
         COUNT(*)::int AS entity_count,
         array_agg(DISTINCT entity_type::int) AS entity_types
       FROM "${table}"

@@ -38,8 +38,8 @@ export function buildLogsQuery(params: LogsQueryParams): LogsQueryDescriptor {
   const sortCol = params.sort_col ?? "id";
 
   const filters: FilterField[] = [];
-  if (params.module) filters.push({ field: "module", value: params.module });
-  if (params.event_type) filters.push({ field: "event_type", value: params.event_type });
+  if (params.module) filters.push({ field: "entity_type", value: params.module });
+  if (params.event_type) filters.push({ field: "type", value: params.event_type });
   if (params.correlation_id)
     filters.push({ field: "correlation_id", value: params.correlation_id });
   if (params.from) filters.push({ field: "timestamp_from", value: params.from });
@@ -70,10 +70,13 @@ function buildSqlParts(q: LogsQueryDescriptor): { whereClause: string; params: u
   for (const f of q.filters) {
     if (f.field === "timestamp_from") {
       params.push(f.value);
-      conditions.push(`created_at >= $${params.length}`);
+      conditions.push(`created_date >= $${params.length}`);
     } else if (f.field === "timestamp_to") {
       params.push(f.value);
-      conditions.push(`created_at <= $${params.length}`);
+      conditions.push(`created_date <= $${params.length}`);
+    } else if (f.field === "entity_type" || f.field === "type") {
+      params.push(f.value);
+      conditions.push(`"${f.field}" = $${params.length}::integer`);
     } else {
       params.push(f.value);
       conditions.push(`"${f.field}" = $${params.length}`);
@@ -84,7 +87,7 @@ function buildSqlParts(q: LogsQueryDescriptor): { whereClause: string; params: u
     params.push(`%${q.search}%`);
     const n = params.length;
     conditions.push(
-      `("module" ILIKE $${n} OR "event_type"::text ILIKE $${n} OR "correlation_id"::text ILIKE $${n})`,
+      `(entity_type::text ILIKE $${n} OR type::text ILIKE $${n} OR correlation_id::text ILIKE $${n})`,
     );
   }
 

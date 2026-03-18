@@ -22,13 +22,13 @@ export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
 
     const rows = await db.unsafe(`
       SELECT
-        module,
+        entity_type,
         COUNT(*)::int AS event_count,
-        array_agg(DISTINCT event_type::text) AS event_types,
+        array_agg(DISTINCT type::text) AS event_types,
         COUNT(DISTINCT correlation_id)::int AS unique_correlations
       FROM "${table}"
-      WHERE module IS NOT NULL
-      GROUP BY module
+      WHERE entity_type IS NOT NULL
+      GROUP BY entity_type
       ORDER BY event_count DESC
     `);
     return reply.send(rows);
@@ -47,19 +47,19 @@ export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
 
       const rows = await db.unsafe(`
       SELECT
-        event_type::text AS event_type,
+        type::text AS event_type,
         COUNT(*)::int AS count,
-        array_agg(DISTINCT module) FILTER (WHERE module IS NOT NULL) AS modules,
+        array_agg(DISTINCT entity_type::text) FILTER (WHERE entity_type IS NOT NULL) AS modules,
         AVG(ordinal_position)::numeric(10,2) AS avg_position
       FROM (
         SELECT
-          event_type,
-          module,
+          type,
+          entity_type,
           correlation_id,
-          ROW_NUMBER() OVER (PARTITION BY correlation_id ORDER BY created_at) AS ordinal_position
+          ROW_NUMBER() OVER (PARTITION BY correlation_id ORDER BY created_date) AS ordinal_position
         FROM "${table}"
       ) sub
-      GROUP BY event_type
+      GROUP BY type
       ORDER BY count DESC
     `);
       return reply.send(rows);
@@ -82,7 +82,7 @@ export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
       FROM (
         SELECT
           correlation_id,
-          array_agg(event_type::text ORDER BY created_at) AS flow
+          array_agg(type::text ORDER BY created_date) AS flow
         FROM "${table}"
         GROUP BY correlation_id
       ) sub
@@ -113,10 +113,10 @@ export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
       const rows = await db.unsafe(
         `
       SELECT
-        DATE_TRUNC($1, created_at) AS bucket,
+        DATE_TRUNC($1, created_date) AS bucket,
         COUNT(*)::int AS event_count
       FROM "${table}"
-      GROUP BY DATE_TRUNC($1, created_at)
+      GROUP BY DATE_TRUNC($1, created_date)
       ORDER BY bucket ASC
     `,
         [bucket],
