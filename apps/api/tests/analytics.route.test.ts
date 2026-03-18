@@ -1,21 +1,18 @@
-import { expect, test, describe, vi, beforeEach } from "vite-plus/test";
+import { expect, test, describe, beforeEach } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
-import type { DbClient } from "../src/db";
+import { createMockDb, type MockDb } from "../test-utils/createMockDb";
 
 describe("GET /api/analytics", () => {
-  let mockDb: DbClient;
+  let mockDb: MockDb;
 
   beforeEach(() => {
-    const fn = vi.fn();
-    fn.mockResolvedValue([]);
-    fn.unsafe = vi.fn().mockResolvedValue([]);
-    mockDb = fn as unknown as DbClient;
+    mockDb = createMockDb();
   });
 
   test("should return 200 when GET /api/analytics/modules is called", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
@@ -27,7 +24,7 @@ describe("GET /api/analytics", () => {
 
   test("should return 200 when GET /api/analytics/flows is called", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
@@ -39,14 +36,14 @@ describe("GET /api/analytics", () => {
 
   test("should pass bucket param to db when bucket query param is provided", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
     await app.inject({ method: "GET", url: "/api/analytics/timeline?table=audit_log&bucket=day" });
 
     // then
-    const calls = (mockDb.unsafe as ReturnType<typeof vi.fn>).mock.calls as [string, unknown[]][];
+    const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
     expect(calls.some(([, params]) => Array.isArray(params) && params.includes("day"))).toBe(true);
   });
 });

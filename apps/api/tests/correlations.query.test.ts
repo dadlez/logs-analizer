@@ -21,6 +21,6 @@ describe("buildCorrelationsQuery", () => {
     const query = buildCorrelationsQuery(params);
 
     // then
-    expect(query.filters).toContainEqual({ field: "module", value: "contracts" });
+    expect(query.filters).toContainEqual({ field: "entity_type", value: "contracts" });
   });
 });

@@ -1,21 +1,18 @@
-import { expect, test, describe, vi, beforeEach } from "vite-plus/test";
+import { expect, test, describe, beforeEach } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
-import type { DbClient } from "../src/db";
+import { createMockDb, type MockDb } from "../test-utils/createMockDb";
 
 describe("GET /api/logs", () => {
-  let mockDb: DbClient;
+  let mockDb: MockDb;
 
   beforeEach(() => {
-    const fn = vi.fn();
-    fn.mockResolvedValue([]);
-    fn.unsafe = vi.fn().mockResolvedValue([]);
-    mockDb = fn as unknown as DbClient;
+    mockDb = createMockDb();
   });
 
   test("should return 200 with data array when GET /api/logs is called", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
@@ -29,17 +26,17 @@ describe("GET /api/logs", () => {
 
   test("should pass module filter to db when module query param is provided", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
     await app.inject({ method: "GET", url: "/api/logs?table=audit_log&module=contracts" });
 
     // then
-    const calls = (mockDb.unsafe as ReturnType<typeof vi.fn>).mock.calls as [string, unknown[]][];
+    const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
     const dataCall = calls.find(([sql]) => sql.includes("SELECT * FROM"));
     expect(dataCall).toBeDefined();
-    expect(dataCall![0]).toContain("module");
+    expect(dataCall![0]).toContain("entity_type");
   });
 
   test("should return 400 when table param is missing", async () => {
@@ -51,6 +48,6 @@ describe("GET /api/logs", () => {
 
     // then
     expect(res.statusCode).toBe(400);
-    expect(mockDb.unsafe as ReturnType<typeof vi.fn>).not.toHaveBeenCalled();
+    expect(mockDb.unsafe).not.toHaveBeenCalled();
   });
 });

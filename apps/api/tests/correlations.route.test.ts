@@ -1,21 +1,18 @@
-import { expect, test, describe, vi, beforeEach } from "vite-plus/test";
+import { expect, test, describe, beforeEach } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
-import type { DbClient } from "../src/db";
+import { createMockDb, type MockDb } from "../test-utils/createMockDb";
 
 describe("GET /api/correlations", () => {
-  let mockDb: DbClient;
+  let mockDb: MockDb;
 
   beforeEach(() => {
-    const fn = vi.fn();
-    fn.mockResolvedValue([]);
-    fn.unsafe = vi.fn().mockResolvedValue([]);
-    mockDb = fn as unknown as DbClient;
+    mockDb = createMockDb();
   });
 
   test("should return 200 with correlation list when GET /api/correlations is called", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
@@ -29,7 +26,7 @@ describe("GET /api/correlations", () => {
 
   test("should return 200 with event array when GET /api/correlations/:id is called", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
@@ -46,14 +43,14 @@ describe("GET /api/correlations", () => {
 
   test("should pass id to db when correlation id is in path params", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
     await app.inject({ method: "GET", url: "/api/correlations/my-corr-id?table=audit_log" });
 
     // then
-    const calls = (mockDb.unsafe as ReturnType<typeof vi.fn>).mock.calls as [string, unknown[]][];
+    const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
     expect(calls.some(([, params]) => Array.isArray(params) && params.includes("my-corr-id"))).toBe(
       true,
     );

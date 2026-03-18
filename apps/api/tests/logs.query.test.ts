@@ -10,7 +10,7 @@ describe("buildLogsQuery", () => {
     const query = buildLogsQuery(params);
 
     // then
-    expect(query.filters).toContainEqual({ field: "module", value: "contracts" });
+    expect(query.filters).toContainEqual({ field: "entity_type", value: "contracts" });
   });
 
   test("should calculate correct offset when page param is provided", () => {
@@ -48,8 +48,8 @@ describe("buildLogsQuery", () => {
     const query = buildLogsQuery(params);
 
     // then
-    expect(query.filters).toContainEqual({ field: "module", value: "contracts" });
-    expect(query.filters).toContainEqual({ field: "event_type", value: "created" });
+    expect(query.filters).toContainEqual({ field: "entity_type", value: "contracts" });
+    expect(query.filters).toContainEqual({ field: "type", value: "created" });
     expect(query.filters).toContainEqual({ field: "correlation_id", value: "abc-123" });
   });
 });

@@ -1,21 +1,18 @@
-import { expect, test, describe, vi, beforeEach } from "vite-plus/test";
+import { expect, test, describe, beforeEach } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
-import type { DbClient } from "../src/db";
+import { createMockDb, type MockDb } from "../test-utils/createMockDb";
 
 describe("GET /api/history", () => {
-  let mockDb: DbClient;
+  let mockDb: MockDb;
 
   beforeEach(() => {
-    const fn = vi.fn();
-    fn.mockResolvedValue([]);
-    fn.unsafe = vi.fn().mockResolvedValue([]);
-    mockDb = fn as unknown as DbClient;
+    mockDb = createMockDb();
   });
 
   test("should return 200 with data array when GET /api/history is called", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
@@ -29,20 +26,20 @@ describe("GET /api/history", () => {
 
   test("should pass action_type filter to db when action_type query param is provided", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
     await app.inject({ method: "GET", url: "/api/history?table=audit_log&action_type=3" });
 
     // then
-    const calls = (mockDb.unsafe as ReturnType<typeof vi.fn>).mock.calls as [string, unknown[]][];
+    const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
     expect(calls.some(([, params]) => Array.isArray(params) && params.includes(3))).toBe(true);
   });
 
   test("should pass user_email filter to db when user_email query param is provided", async () => {
     // given
-    (mockDb.unsafe as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
@@ -52,7 +49,7 @@ describe("GET /api/history", () => {
     });
 
     // then
-    const calls = (mockDb.unsafe as ReturnType<typeof vi.fn>).mock.calls as [string, unknown[]][];
+    const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
     expect(
       calls.some(([, params]) => Array.isArray(params) && params.includes("test@example.com")),
     ).toBe(true);
@@ -70,6 +67,6 @@ describe("GET /api/history", () => {
 
     // then
     expect(res.statusCode).toBe(400);
-    expect(mockDb.unsafe as ReturnType<typeof vi.fn>).not.toHaveBeenCalled();
+    expect(mockDb.unsafe).not.toHaveBeenCalled();
   });
 });

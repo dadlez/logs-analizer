@@ -32,7 +32,7 @@ describe("buildHistoryQuery", () => {
     const query = buildHistoryQuery(params);
 
     // then
-    expect(query.filters).toContainEqual({ field: "action_type", value: 3 });
+    expect(query.filters).toContainEqual({ field: "type", value: 3 });
   });
 
   test("should calculate correct offset when page 2 is requested", () => {
