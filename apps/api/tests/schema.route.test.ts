@@ -1,4 +1,4 @@
-import { expect, test, describe, vi } from "vitest";
+import { expect, test, describe, vi } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
 describe("GET /api/schema", () => {

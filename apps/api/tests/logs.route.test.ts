@@ -1,7 +1,7 @@
-import { expect, test, describe, vi, beforeEach } from "vitest";
+import { expect, test, describe, vi, beforeEach } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
-import type {DbClient} from "../src/db";
+import type { DbClient } from "../src/db";
 
 describe("GET /api/logs", () => {
   let mockDb: DbClient;
@@ -51,6 +51,6 @@ describe("GET /api/logs", () => {
 
     // then
     expect(res.statusCode).toBe(400);
-    expect(mockDb.unsafe).not.toHaveBeenCalled();
+    expect(mockDb.unsafe as ReturnType<typeof vi.fn>).not.toHaveBeenCalled();
   });
 });

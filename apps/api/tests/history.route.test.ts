@@ -1,7 +1,7 @@
-import { expect, test, describe, vi, beforeEach } from "vitest";
+import { expect, test, describe, vi, beforeEach } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
-import type {DbClient} from "../src/db";
+import type { DbClient } from "../src/db";
 
 describe("GET /api/history", () => {
   let mockDb: DbClient;
@@ -46,11 +46,16 @@ describe("GET /api/history", () => {
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
-    await app.inject({ method: "GET", url: "/api/history?table=audit_log&user_email=test@example.com" });
+    await app.inject({
+      method: "GET",
+      url: "/api/history?table=audit_log&user_email=test@example.com",
+    });
 
     // then
     const calls = (mockDb.unsafe as ReturnType<typeof vi.fn>).mock.calls as [string, unknown[]][];
-    expect(calls.some(([, params]) => Array.isArray(params) && params.includes("test@example.com"))).toBe(true);
+    expect(
+      calls.some(([, params]) => Array.isArray(params) && params.includes("test@example.com")),
+    ).toBe(true);
   });
 
   test("should return 400 when action_type param is not a valid Type enum value", async () => {
@@ -58,10 +63,13 @@ describe("GET /api/history", () => {
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
-    const res = await app.inject({ method: "GET", url: "/api/history?table=audit_log&action_type=99" });
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/history?table=audit_log&action_type=99",
+    });
 
     // then
     expect(res.statusCode).toBe(400);
-    expect(mockDb.unsafe).not.toHaveBeenCalled();
+    expect(mockDb.unsafe as ReturnType<typeof vi.fn>).not.toHaveBeenCalled();
   });
 });

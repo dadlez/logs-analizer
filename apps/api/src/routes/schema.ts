@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import type {DbClient} from "../db";
+import type { DbClient } from "../db";
 
 export interface SchemaQueryResult {
   table_name: string;

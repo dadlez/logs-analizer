@@ -1,4 +1,4 @@
-import postgres, {type Sql} from "postgres";
+import postgres, { type Sql } from "postgres";
 
 export type DbClient = Sql;
 

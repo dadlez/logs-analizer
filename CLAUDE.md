@@ -80,21 +80,26 @@ These commands map to their corresponding tools. For example, `vp dev --port 300
 A monorepo for analyzing PostgreSQL audit logs and discovering the domain behind them.
 
 ### Packages
+
 - `apps/api` — Fastify backend, port 3001
 - `apps/website` — React SPA (FSD), port 5173
 - `packages/contract` — Shared types + domain enums (consumed by both)
 
 ### Dev
+
 Run `vp run api#dev website#dev` from root (or `cd apps/api && vp dev` / `cd apps/website && vp dev` individually).
 
 ### Important: contract package
+
 `packages/contract` must be built before tests run: `cd packages/contract && vp pack`
 
 ### Domain enums (packages/contract/src/enums.ts)
+
 - `Type`: Added=1, Deleted=2, Modified=3
 - `EntityType`: Unknown=0, ContractHeaderEntity=1, AnnexHeaderEntity=2, AnnexChangeEntity=3, FileEntity=4, InvoiceEntity=5, PaymentScheduleEntity=6, ContractFundingEntity=7
 
 ### Implementation Status
+
 - ✅ Phase A — Monorepo wiring (catalog, packages/contract)
 - ✅ Phase B — apps/api skeleton + DB + health endpoint
 - ✅ Phase C — GET /api/schema
@@ -106,9 +111,11 @@ Run `vp run api#dev website#dev` from root (or `cd apps/api && vp dev` / `cd app
 - ✅ Phase J — pages/ + app/ + routing
 
 ### Tests
+
 - API: `cd apps/api && vp test` (31 tests)
 - Website: `cd apps/website && vp test` (9 tests)
 
 ### Database Schema
+
 To be filled in after `curl http://localhost:3001/api/schema`:
 Run the API first: `cd apps/api && vp dev`

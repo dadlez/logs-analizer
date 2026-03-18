@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import type {DbClient} from "../db";
+import type { DbClient } from "../db";
 
 export interface LogsQueryParams {
   table: string;
@@ -40,7 +40,8 @@ export function buildLogsQuery(params: LogsQueryParams): LogsQueryDescriptor {
   const filters: FilterField[] = [];
   if (params.module) filters.push({ field: "module", value: params.module });
   if (params.event_type) filters.push({ field: "event_type", value: params.event_type });
-  if (params.correlation_id) filters.push({ field: "correlation_id", value: params.correlation_id });
+  if (params.correlation_id)
+    filters.push({ field: "correlation_id", value: params.correlation_id });
   if (params.from) filters.push({ field: "timestamp_from", value: params.from });
   if (params.to) filters.push({ field: "timestamp_to", value: params.to });
 
@@ -82,7 +83,9 @@ function buildSqlParts(q: LogsQueryDescriptor): { whereClause: string; params: u
   if (q.search) {
     params.push(`%${q.search}%`);
     const n = params.length;
-    conditions.push(`("module" ILIKE $${n} OR "event_type"::text ILIKE $${n} OR "correlation_id"::text ILIKE $${n})`);
+    conditions.push(
+      `("module" ILIKE $${n} OR "event_type"::text ILIKE $${n} OR "correlation_id"::text ILIKE $${n})`,
+    );
   }
 
   return {
@@ -107,7 +110,19 @@ export function logsRoute(fastify: FastifyInstance, db: DbClient) {
       sort_dir?: string;
     };
   }>("/api/logs", async (req, reply) => {
-    const { table, page, limit, module, event_type, correlation_id, from, to, search, sort_col, sort_dir } = req.query;
+    const {
+      table,
+      page,
+      limit,
+      module,
+      event_type,
+      correlation_id,
+      from,
+      to,
+      search,
+      sort_col,
+      sort_dir,
+    } = req.query;
 
     if (!table) {
       return reply.status(400).send({ error: "table param is required" });

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { Type } from "contract";
-import type {DbClient} from "../db";
+import type { DbClient } from "../db";
 
 export interface HistoryQueryParams {
   table: string;
@@ -29,7 +29,8 @@ export function buildHistoryQuery(params: HistoryQueryParams): HistoryQueryDescr
   if (params.from) filters.push({ field: "timestamp_from", value: params.from });
   if (params.to) filters.push({ field: "timestamp_to", value: params.to });
   if (params.user_email) filters.push({ field: "user_email", value: params.user_email });
-  if (params.action_type !== undefined) filters.push({ field: "action_type", value: params.action_type });
+  if (params.action_type !== undefined)
+    filters.push({ field: "action_type", value: params.action_type });
 
   return {
     table: params.table,
@@ -48,7 +49,9 @@ function validateIdentifier(name: string): void {
   }
 }
 
-const VALID_ACTION_TYPES = new Set(Object.values(Type).filter((v): v is number => typeof v === "number"));
+const VALID_ACTION_TYPES = new Set(
+  Object.values(Type).filter((v): v is number => typeof v === "number"),
+);
 
 export function historyRoute(fastify: FastifyInstance, db: DbClient) {
   fastify.get<{
@@ -72,7 +75,9 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
     if (action_type !== undefined) {
       parsedActionType = parseInt(action_type, 10);
       if (isNaN(parsedActionType) || !VALID_ACTION_TYPES.has(parsedActionType)) {
-        return reply.status(400).send({ error: "action_type must be a valid Type enum value (1, 2, or 3)" });
+        return reply
+          .status(400)
+          .send({ error: "action_type must be a valid Type enum value (1, 2, or 3)" });
       }
     }
 

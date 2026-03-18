@@ -29,6 +29,8 @@ vp run dev
 ```
 
 ===========
+
 # Assumptions
-* the UI should allow easy logs navigation and a domain discovery analysis. 
-* log analysis should include per-service views, per-correlation_id views, maybe other.
+
+- the UI should allow easy logs navigation and a domain discovery analysis.
+- log analysis should include per-service views, per-correlation_id views, maybe other.

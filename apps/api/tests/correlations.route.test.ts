@@ -1,7 +1,7 @@
-import { expect, test, describe, vi, beforeEach } from "vitest";
+import { expect, test, describe, vi, beforeEach } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
-import type {DbClient} from "../src/db";
+import type { DbClient } from "../src/db";
 
 describe("GET /api/correlations", () => {
   let mockDb: DbClient;
@@ -33,7 +33,10 @@ describe("GET /api/correlations", () => {
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
-    const res = await app.inject({ method: "GET", url: "/api/correlations/test-id-123?table=audit_log" });
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/correlations/test-id-123?table=audit_log",
+    });
 
     // then
     expect(res.statusCode).toBe(200);
@@ -51,6 +54,8 @@ describe("GET /api/correlations", () => {
 
     // then
     const calls = (mockDb.unsafe as ReturnType<typeof vi.fn>).mock.calls as [string, unknown[]][];
-    expect(calls.some(([, params]) => Array.isArray(params) && params.includes("my-corr-id"))).toBe(true);
+    expect(calls.some(([, params]) => Array.isArray(params) && params.includes("my-corr-id"))).toBe(
+      true,
+    );
   });
 });

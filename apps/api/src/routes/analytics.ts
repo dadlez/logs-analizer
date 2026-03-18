@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import type {DbClient} from "../db";
+import type { DbClient } from "../db";
 
 const SAFE_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
@@ -14,7 +14,11 @@ export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
   fastify.get<{ Querystring: { table?: string } }>("/api/analytics/modules", async (req, reply) => {
     const { table } = req.query;
     if (!table) return reply.status(400).send({ error: "table param is required" });
-    try { validateIdentifier(table); } catch (e) { return reply.status(400).send({ error: (e as Error).message }); }
+    try {
+      validateIdentifier(table);
+    } catch (e) {
+      return reply.status(400).send({ error: (e as Error).message });
+    }
 
     const rows = await db.unsafe(`
       SELECT
@@ -30,12 +34,18 @@ export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
     return reply.send(rows);
   });
 
-  fastify.get<{ Querystring: { table?: string } }>("/api/analytics/event-types", async (req, reply) => {
-    const { table } = req.query;
-    if (!table) return reply.status(400).send({ error: "table param is required" });
-    try { validateIdentifier(table); } catch (e) { return reply.status(400).send({ error: (e as Error).message }); }
+  fastify.get<{ Querystring: { table?: string } }>(
+    "/api/analytics/event-types",
+    async (req, reply) => {
+      const { table } = req.query;
+      if (!table) return reply.status(400).send({ error: "table param is required" });
+      try {
+        validateIdentifier(table);
+      } catch (e) {
+        return reply.status(400).send({ error: (e as Error).message });
+      }
 
-    const rows = await db.unsafe(`
+      const rows = await db.unsafe(`
       SELECT
         event_type::text AS event_type,
         COUNT(*)::int AS count,
@@ -52,13 +62,18 @@ export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
       GROUP BY event_type
       ORDER BY count DESC
     `);
-    return reply.send(rows);
-  });
+      return reply.send(rows);
+    },
+  );
 
   fastify.get<{ Querystring: { table?: string } }>("/api/analytics/flows", async (req, reply) => {
     const { table } = req.query;
     if (!table) return reply.status(400).send({ error: "table param is required" });
-    try { validateIdentifier(table); } catch (e) { return reply.status(400).send({ error: (e as Error).message }); }
+    try {
+      validateIdentifier(table);
+    } catch (e) {
+      return reply.status(400).send({ error: (e as Error).message });
+    }
 
     const rows = await db.unsafe(`
       SELECT
@@ -78,25 +93,35 @@ export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
     return reply.send(rows);
   });
 
-  fastify.get<{ Querystring: { table?: string; bucket?: string } }>("/api/analytics/timeline", async (req, reply) => {
-    const { table, bucket = "hour" } = req.query;
-    if (!table) return reply.status(400).send({ error: "table param is required" });
+  fastify.get<{ Querystring: { table?: string; bucket?: string } }>(
+    "/api/analytics/timeline",
+    async (req, reply) => {
+      const { table, bucket = "hour" } = req.query;
+      if (!table) return reply.status(400).send({ error: "table param is required" });
 
-    const validBuckets = ["minute", "hour", "day"];
-    if (!validBuckets.includes(bucket)) {
-      return reply.status(400).send({ error: "bucket must be one of: minute, hour, day" });
-    }
+      const validBuckets = ["minute", "hour", "day"];
+      if (!validBuckets.includes(bucket)) {
+        return reply.status(400).send({ error: "bucket must be one of: minute, hour, day" });
+      }
 
-    try { validateIdentifier(table); } catch (e) { return reply.status(400).send({ error: (e as Error).message }); }
+      try {
+        validateIdentifier(table);
+      } catch (e) {
+        return reply.status(400).send({ error: (e as Error).message });
+      }
 
-    const rows = await db.unsafe(`
+      const rows = await db.unsafe(
+        `
       SELECT
         DATE_TRUNC($1, created_at) AS bucket,
         COUNT(*)::int AS event_count
       FROM "${table}"
       GROUP BY DATE_TRUNC($1, created_at)
       ORDER BY bucket ASC
-    `, [bucket]);
-    return reply.send(rows);
-  });
+    `,
+        [bucket],
+      );
+      return reply.send(rows);
+    },
+  );
 }

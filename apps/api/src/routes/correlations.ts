@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import type {DbClient} from "../db";
+import type { DbClient } from "../db";
 
 export interface CorrelationsQueryParams {
   table: string;
@@ -20,7 +20,9 @@ export interface CorrelationsQueryDescriptor {
   groupBy: string;
 }
 
-export function buildCorrelationsQuery(params: CorrelationsQueryParams): CorrelationsQueryDescriptor {
+export function buildCorrelationsQuery(
+  params: CorrelationsQueryParams,
+): CorrelationsQueryDescriptor {
   const page = Math.max(1, params.page ?? 1);
   const limit = Math.min(100, Math.max(1, params.limit ?? 20));
   const offset = (page - 1) * limit;
@@ -45,7 +47,10 @@ export interface CorrelationDetailQueryDescriptor {
   correlationId: string;
 }
 
-export function buildCorrelationDetailQuery(params: { table: string; correlationId: string }): CorrelationDetailQueryDescriptor {
+export function buildCorrelationDetailQuery(params: {
+  table: string;
+  correlationId: string;
+}): CorrelationDetailQueryDescriptor {
   return {
     table: params.table,
     correlationId: params.correlationId,
@@ -62,7 +67,14 @@ function validateIdentifier(name: string): void {
 
 export function correlationsRoute(fastify: FastifyInstance, db: DbClient) {
   fastify.get<{
-    Querystring: { table?: string; page?: string; limit?: string; module?: string; from?: string; to?: string };
+    Querystring: {
+      table?: string;
+      page?: string;
+      limit?: string;
+      module?: string;
+      from?: string;
+      to?: string;
+    };
   }>("/api/correlations", async (req, reply) => {
     const { table, page, limit, module, from, to } = req.query;
 
@@ -156,11 +168,20 @@ export function correlationsRoute(fastify: FastifyInstance, db: DbClient) {
       return reply.status(400).send({ error: (e as Error).message });
     }
 
-    const events = await db.unsafe(`SELECT * FROM "${table}" WHERE correlation_id = $1 ORDER BY created_at ASC`, [id]);
+    const events = await db.unsafe(
+      `SELECT * FROM "${table}" WHERE correlation_id = $1 ORDER BY created_at ASC`,
+      [id],
+    );
 
-    const modules = [...new Set((events as Record<string, unknown>[]).map((e) => e["module"]).filter(Boolean))] as string[];
-    const eventTypes = [...new Set((events as Record<string, unknown>[]).map((e) => e["event_type"]).filter(Boolean))] as string[];
-    const flow = (events as Record<string, unknown>[]).map((e) => String(e["event_type"] ?? "")).filter(Boolean);
+    const modules = [
+      ...new Set((events as Record<string, unknown>[]).map((e) => e["module"]).filter(Boolean)),
+    ] as string[];
+    const eventTypes = [
+      ...new Set((events as Record<string, unknown>[]).map((e) => e["event_type"]).filter(Boolean)),
+    ] as string[];
+    const flow = (events as Record<string, unknown>[])
+      .map((e) => (e["event_type"] as string) ?? "")
+      .filter(Boolean);
 
     return reply.send({
       correlation_id: id,

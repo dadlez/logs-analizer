@@ -1,7 +1,7 @@
-import { expect, test, describe, vi, beforeEach } from "vitest";
+import { expect, test, describe, vi, beforeEach } from "vite-plus/test";
 import { buildApp } from "../src/app";
 
-import type {DbClient} from "../src/db";
+import type { DbClient } from "../src/db";
 
 describe("GET /api/analytics", () => {
   let mockDb: DbClient;

@@ -10,10 +10,7 @@ import { historyRoute } from "./routes/history";
 import type { DbClient } from "./db";
 import type { NodeEnv } from "./config";
 
-export function buildApp(options: {
-  db: DbClient;
-  nodeEnv: NodeEnv;
-}) {
+export function buildApp(options: { db: DbClient; nodeEnv: NodeEnv }) {
   const fastify = Fastify({
     logger: options.nodeEnv !== "test",
   });
