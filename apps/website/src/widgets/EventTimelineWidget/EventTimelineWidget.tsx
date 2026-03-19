@@ -22,7 +22,7 @@ export function EventTimelineWidget({ id, table }: EventTimelineWidgetProps) {
 
   return (
     <Box data-testid="correlation-detail">
-      <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
+      <Paper sx={{ p: 2, mb: 2 }}>
         <Typography variant="subtitle1" fontWeight={600}>
           Correlation: {data.correlation_id}
         </Typography>

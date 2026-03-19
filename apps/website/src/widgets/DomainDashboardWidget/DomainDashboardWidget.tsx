@@ -57,11 +57,7 @@ export function DomainDashboardWidget() {
           )}
           <Stack direction="row" flexWrap="wrap" gap={2}>
             {modules?.map((m) => (
-              <Card
-                key={m.entity_type}
-                variant="outlined"
-                data-testid={`module-card-${m.entity_type}`}
-              >
+              <Card key={m.entity_type} data-testid={`module-card-${m.entity_type}`}>
                 <CardContent>
                   <Typography variant="h6">{m.entity_type}</Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -87,10 +83,7 @@ export function DomainDashboardWidget() {
           )}
           <Stack spacing={1}>
             {eventTypes?.map((et) => (
-              <Box
-                key={et.event_type}
-                sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 1 }}
-              >
+              <Box key={et.event_type} sx={{ p: 1.5, bgcolor: "action.hover", borderRadius: 1 }}>
                 <Typography variant="subtitle2">{et.event_type}</Typography>
                 <Typography variant="caption" color="text.secondary">
                   Count: {et.count} · Avg position: {et.avg_position}
@@ -115,7 +108,7 @@ export function DomainDashboardWidget() {
               <Box
                 key={n}
                 data-testid={`flow-sequence-${n}`}
-                sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 1 }}
+                sx={{ p: 1.5, bgcolor: "action.hover", borderRadius: 1 }}
               >
                 <Typography variant="caption" color="text.secondary">
                   ×{f.count}

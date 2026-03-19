@@ -18,7 +18,7 @@ catalog:
   "@types/node": ^24
   "@types/react": ^19
   "@types/react-dom": ^19
-  '@typescript/native-preview': 7.0.0-dev.20260319.1
+  "@typescript/native-preview": 7.0.0-dev.20260319.1
   "@vitejs/plugin-react": ^6
   "@vitejs/plugin-react-oxc": ^0.4
   fastify: ^5

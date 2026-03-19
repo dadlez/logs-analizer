@@ -6,12 +6,5 @@ interface BadgeProps {
 }
 
 export function Badge({ label, variant = "module" }: BadgeProps) {
-  return (
-    <Chip
-      label={label}
-      size="small"
-      color={variant === "module" ? "primary" : "secondary"}
-      variant="outlined"
-    />
-  );
+  return <Chip label={label} size="small" color={variant === "module" ? "primary" : "secondary"} />;
 }

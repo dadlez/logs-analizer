@@ -56,7 +56,7 @@ export function DataTable<T extends object>({
   return (
     <Box>
       <TableContainer component={Paper} data-testid="data-table">
-        <Table size="small">
+        <Table>
           <TableHead>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -106,7 +106,7 @@ export function DataTable<T extends object>({
       </TableContainer>
 
       {total > 0 && (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
           <Button
             size="small"
             disabled={page <= 1}

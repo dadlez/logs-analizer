@@ -24,6 +24,16 @@ export function NavBar() {
             to={item.to}
             selected={currentPath.startsWith(item.to)}
             data-testid={item.testId}
+            sx={{
+              mx: 1,
+              borderRadius: 1,
+              "&.Mui-selected": {
+                backgroundColor: "primary.main",
+                color: "primary.contrastText",
+                "&:hover": { backgroundColor: "primary.dark" },
+              },
+              "&.Mui-selected .MuiListItemText-primary": { fontWeight: 600 },
+            }}
           >
             <ListItemText primary={item.label} />
           </ListItemButton>

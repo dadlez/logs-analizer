@@ -28,7 +28,12 @@ export function AppShell({ children }: AppShellProps) {
         sx={{
           width: DRAWER_WIDTH,
           flexShrink: 0,
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box" },
+          "& .MuiDrawer-paper": {
+            width: DRAWER_WIDTH,
+            boxSizing: "border-box",
+            borderRight: "none",
+            boxShadow: "2px 0 8px rgba(0,0,0,0.06)",
+          },
         }}
       >
         <Toolbar />
