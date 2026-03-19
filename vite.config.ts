@@ -1,5 +1,8 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  lint: { options: { typeAware: true, typeCheck: true } },
+  lint: {
+    options: { typeAware: true, typeCheck: true },
+    settings: { endOfLine: "lf" },
+  },
 });

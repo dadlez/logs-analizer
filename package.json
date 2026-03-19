@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "ready": "vp fmt && vp lint && vp run test -r && vp run build -r",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
     "dev:api": "vp run api#dev",
     "dev:website": "vp run website#dev",
     "start:website": "vp run website#preview",

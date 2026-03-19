@@ -149,9 +149,9 @@ Two tables discovered via `GET /api/schema`:
 
 ### Column mapping (API params → DB columns)
 
-| API/frontend concept | DB column |
-|---|---|
-| `module` filter | `entity_type` (integer, cast `::integer`) |
-| `event_type` filter | `type` (integer, cast `::integer`) |
-| `action_type` (history) | `type` |
-| `contract_number` (history response) | `primary_key` CASE WHEN entity_type=1 |
+| API/frontend concept                 | DB column                                 |
+| ------------------------------------ | ----------------------------------------- |
+| `module` filter                      | `entity_type` (integer, cast `::integer`) |
+| `event_type` filter                  | `type` (integer, cast `::integer`)        |
+| `action_type` (history)              | `type`                                    |
+| `contract_number` (history response) | `primary_key` CASE WHEN entity_type=1     |
