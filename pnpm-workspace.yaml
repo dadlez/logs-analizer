@@ -1,7 +1,6 @@
 packages:
   - apps/*
   - packages/*
-  - tools/*
 
 catalogMode: prefer
 
@@ -36,6 +35,9 @@ catalog:
   msw: ^2
   "@testing-library/react": ^16
   "@testing-library/user-event": ^14
+  "@tanstack/zod-adapter": ^1
+  # Contract
+  "zod": ^4.3
 overrides:
   vite: "catalog:"
   vitest: "catalog:"

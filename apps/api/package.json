@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node --env-file=.env --import tsx/esm --watch src/index.ts",
     "build": "tsup",
-    "test": "vp test"
+    "test": "vp test",
+    "start": "node --env-file=.env import tsx/esm src/indes.ts"
   },
   "dependencies": {
     "@fastify/cors": "catalog:",

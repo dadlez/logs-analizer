@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "ready": "vp fmt && vp lint && vp run test -r && vp run build -r",
-    "dev": "vp run api#dev website#dev",
     "dev:api": "vp run api#dev",
     "dev:website": "vp run website#dev",
-    "build:api": "vp run api#build",
-    "build:website": "vp run website#build"
+    "start:website": "vp run website#preview",
+    "start:api": "vp run api#start",
+    "build": "vp run --cache -r build"
   },
   "devDependencies": {
     "vite-plus": "catalog:"
