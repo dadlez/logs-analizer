@@ -6,7 +6,13 @@ import {
   Outlet,
 } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { z } from "zod";
+import {
+  correlationDetailSearchParams,
+  correlationsSearchParams,
+  domainSearchParams,
+  explorerSearchParams,
+  historySearchParams,
+} from "contract";
 import { AppShell } from "../shared/ui";
 import { ExplorerPage } from "../pages/ExplorerPage.tsx";
 import { CorrelationsPage } from "../pages/CorrelationsPage.tsx";
@@ -33,65 +39,35 @@ const indexRoute = createRoute({
 const explorerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/explorer",
-  validateSearch: zodValidator(
-    z.object({
-      table: z.string().default(""),
-      module: z.string().default(""),
-      event_type: z.string().default(""),
-      correlation_id: z.string().default(""),
-      from: z.string().default(""),
-      to: z.string().default(""),
-      search: z.string().default(""),
-      page: z.number().default(1),
-      sort_col: z.string().default(""),
-      sort_dir: z.enum(["asc", "desc"]).default("desc"),
-    }),
-  ),
+  validateSearch: zodValidator(explorerSearchParams),
   component: ExplorerPage,
 });
 
 const correlationsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/correlations",
-  validateSearch: zodValidator(
-    z.object({
-      table: z.string().default(""),
-      module: z.string().default(""),
-      from: z.string().default(""),
-      to: z.string().default(""),
-      page: z.number().default(1),
-    }),
-  ),
+  validateSearch: zodValidator(correlationsSearchParams),
   component: CorrelationsPage,
 });
 
 const correlationDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/correlations/$id",
-  validateSearch: zodValidator(z.object({ table: z.string().default("") })),
+  validateSearch: zodValidator(correlationDetailSearchParams),
   component: CorrelationDetailPage,
 });
 
 const domainRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/domain",
-  validateSearch: zodValidator(z.object({ table: z.string().default("") })),
+  validateSearch: zodValidator(domainSearchParams),
   component: DomainPage,
 });
 
 const historyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/history",
-  validateSearch: zodValidator(
-    z.object({
-      table: z.string().default(""),
-      page: z.number().default(1),
-      from: z.string().default(""),
-      to: z.string().default(""),
-      user_email: z.string().default(""),
-      action_type: z.number().optional(),
-    }),
-  ),
+  validateSearch: zodValidator(historySearchParams),
   component: HistoryPage,
 });
 
