@@ -7,13 +7,23 @@ import { LogsFiltersPanel, useLogFilters } from "../../features/filter-logs/inde
 import { useTableSelection } from "../../features/select-table/index.ts";
 import { useCorrelationNavigation } from "../../features/view-correlation/index.ts";
 import type { LogRow } from "../../entities/log/index.ts";
+import { TypeLabels, EntityTypeLabels } from "../../entities/log/index.ts";
+import type { Type, EntityType } from "../../entities/log/index.ts";
 
 const columns: ColumnDef<LogRow, unknown>[] = [
   { accessorKey: "id", header: "ID" },
   { accessorKey: "correlation_id", header: "Correlation ID" },
   { accessorKey: "user_email", header: "User" },
-  { accessorKey: "type", header: "Action" },
-  { accessorKey: "entity_type", header: "Entity Type" },
+  {
+    accessorKey: "type",
+    header: "Action",
+    cell: (info) => TypeLabels[info.getValue() as Type] ?? String(info.getValue()),
+  },
+  {
+    accessorKey: "entity_type",
+    header: "Entity Type",
+    cell: (info) => EntityTypeLabels[info.getValue() as EntityType] ?? String(info.getValue()),
+  },
   { accessorKey: "created_date", header: "Created At" },
 ];
 

@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { Badge, LoadingSpinner, ErrorBanner } from "../../shared/ui/index.ts";
 import { useModulesQuery, useEventTypesQuery, useFlowsQuery } from "../../entities/domain/index.ts";
+import { resolveActionLabel, resolveModuleLabel } from "../../entities/log/index.ts";
 import { TableSelector } from "../../features/select-table/index.ts";
 import { useTableSelection } from "../../features/select-table/index.ts";
 
@@ -59,13 +60,13 @@ export function DomainDashboardWidget() {
             {modules?.map((m) => (
               <Card key={m.entity_type} data-testid={`module-card-${m.entity_type}`}>
                 <CardContent>
-                  <Typography variant="h6">{m.entity_type}</Typography>
+                  <Typography variant="h6">{resolveModuleLabel(m.entity_type)}</Typography>
                   <Typography variant="body2" color="text.secondary">
                     {m.event_count} events · {m.unique_correlations} correlations
                   </Typography>
                   <Box sx={{ mt: 1, display: "flex", gap: 0.5, flexWrap: "wrap" }}>
                     {m.event_types.map((et) => (
-                      <Badge key={et} label={et} variant="event-type" />
+                      <Badge key={et} label={resolveActionLabel(et)} variant="event-type" />
                     ))}
                   </Box>
                 </CardContent>
@@ -84,7 +85,7 @@ export function DomainDashboardWidget() {
           <Stack spacing={1}>
             {eventTypes?.map((et) => (
               <Box key={et.event_type} sx={{ p: 1.5, bgcolor: "action.hover", borderRadius: 1 }}>
-                <Typography variant="subtitle2">{et.event_type}</Typography>
+                <Typography variant="subtitle2">{resolveActionLabel(et.event_type)}</Typography>
                 <Typography variant="caption" color="text.secondary">
                   Count: {et.count} · Avg position: {et.avg_position}
                 </Typography>
@@ -115,7 +116,7 @@ export function DomainDashboardWidget() {
                 </Typography>
                 <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mt: 0.5 }}>
                   {f.flow.map((step, i) => (
-                    <Badge key={i} label={step} variant="event-type" />
+                    <Badge key={i} label={resolveActionLabel(step)} variant="event-type" />
                   ))}
                 </Box>
               </Box>
