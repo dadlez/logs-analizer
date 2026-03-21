@@ -7,7 +7,8 @@
     "dev": "vp dev",
     "build": "vp build",
     "preview": "vp preview",
-    "test": "vp test"
+    "test": "vp test",
+    "lint:fsd": "vp exec steiger ./src"
   },
   "dependencies": {
     "@emotion/react": "catalog:",
@@ -32,6 +33,8 @@
     "msw": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vite-plus": "catalog:"
+    "vite-plus": "catalog:",
+    "@feature-sliced/steiger-plugin": "catalog:",
+    "steiger": "catalog:"
   }
 }

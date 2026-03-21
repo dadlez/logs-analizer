@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "ready": "vp fmt && vp lint && vp run test -r && vp run build -r",
+    "ready": "vp fmt && vp lint && vp run website#lint:fsd && vp run test -r && vp run build -r",
     "lint:fix": "vp lint --fix",
     "format": "vp fmt",
     "dev:api": "vp run api#dev",
