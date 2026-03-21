@@ -3,6 +3,20 @@ export type {
   EventTypeAnalytics,
   FlowAnalytics,
   TimelineBucket,
+  CooccurrenceEntry,
+  CascadePattern,
 } from "./model.ts";
-export { fetchModules, fetchEventTypes, fetchFlows } from "./api.ts";
-export { useModulesQuery, useEventTypesQuery, useFlowsQuery } from "./useDomainQuery.ts";
+export {
+  fetchModules,
+  fetchEventTypes,
+  fetchFlows,
+  fetchCooccurrence,
+  fetchCascade,
+} from "./api.ts";
+export {
+  useModulesQuery,
+  useEventTypesQuery,
+  useFlowsQuery,
+  useCooccurrenceQuery,
+  useCascadeQuery,
+} from "./useDomainQuery.ts";

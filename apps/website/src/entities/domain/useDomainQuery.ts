@@ -1,5 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchModules, fetchEventTypes, fetchFlows } from "./api.ts";
+import {
+  fetchModules,
+  fetchEventTypes,
+  fetchFlows,
+  fetchCooccurrence,
+  fetchCascade,
+} from "./api.ts";
 
 export function useModulesQuery(table: string) {
   return useQuery({
@@ -21,6 +27,22 @@ export function useFlowsQuery(table: string) {
   return useQuery({
     queryKey: ["analytics", "flows", table],
     queryFn: () => fetchFlows(table),
+    enabled: !!table,
+  });
+}
+
+export function useCooccurrenceQuery(table: string) {
+  return useQuery({
+    queryKey: ["analytics", "cooccurrence", table],
+    queryFn: () => fetchCooccurrence(table),
+    enabled: !!table,
+  });
+}
+
+export function useCascadeQuery(table: string) {
+  return useQuery({
+    queryKey: ["analytics", "cascade", table],
+    queryFn: () => fetchCascade(table),
     enabled: !!table,
   });
 }

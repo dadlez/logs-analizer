@@ -1,1 +1,8 @@
-export type { ModuleAnalytics, EventTypeAnalytics, FlowAnalytics, TimelineBucket } from "contract";
+export type {
+  ModuleAnalytics,
+  EventTypeAnalytics,
+  FlowAnalytics,
+  TimelineBucket,
+  CooccurrenceEntry,
+  CascadePattern,
+} from "contract";

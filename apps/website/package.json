@@ -24,6 +24,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@feature-sliced/steiger-plugin": "catalog:",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",
     "@types/react": "catalog:",
@@ -31,10 +32,9 @@
     "@vitejs/plugin-react": "catalog:",
     "jsdom": "catalog:",
     "msw": "catalog:",
+    "steiger": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vite-plus": "catalog:",
-    "@feature-sliced/steiger-plugin": "catalog:",
-    "steiger": "catalog:"
+    "vite-plus": "catalog:"
   }
 }

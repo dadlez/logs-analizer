@@ -56,4 +56,62 @@ test.describe("History page", () => {
     await expect(page).toHaveURL(/user_email=nonexistent/);
     await expect(page.getByTestId("data-table")).toBeVisible();
   });
+
+  test("should filter rows when action_type filter is set to Added", async ({ page }) => {
+    // given
+    await page.goto(`/history?table=${TABLE}`);
+    await expect(page.getByTestId("data-table")).toBeVisible();
+
+    // when
+    await page.getByLabel("Action Type").click();
+    await page.getByRole("option", { name: "Added" }).click();
+
+    // then — URL contains numeric action_type param, no error page
+    await expect(page).toHaveURL(/action_type=1/);
+    await expect(page.getByTestId("history-table")).toBeVisible();
+    await expect(page.getByTestId("data-table")).toBeVisible();
+  });
+
+  test("should filter rows when action_type filter is set to Deleted", async ({ page }) => {
+    // given
+    await page.goto(`/history?table=${TABLE}`);
+    await expect(page.getByTestId("data-table")).toBeVisible();
+
+    // when
+    await page.getByLabel("Action Type").click();
+    await page.getByRole("option", { name: "Deleted" }).click();
+
+    // then — URL contains numeric action_type param, no error page
+    await expect(page).toHaveURL(/action_type=2/);
+    await expect(page.getByTestId("history-table")).toBeVisible();
+    await expect(page.getByTestId("data-table")).toBeVisible();
+  });
+
+  test("should reset action_type filter when All option is selected", async ({ page }) => {
+    // given
+    await page.goto(`/history?table=${TABLE}&action_type=1`);
+    await expect(page.getByTestId("data-table")).toBeVisible();
+
+    // when
+    await page.getByLabel("Action Type").click();
+    await page.getByRole("option", { name: "All" }).click();
+
+    // then — action_type param removed from URL
+    await expect(page).not.toHaveURL(/action_type/);
+    await expect(page.getByTestId("data-table")).toBeVisible();
+  });
+
+  test("should clear all filters when clear button is clicked", async ({ page }) => {
+    // given
+    await page.goto(`/history?table=${TABLE}&action_type=1`);
+    await expect(page.getByTestId("data-table")).toBeVisible();
+
+    // when
+    await page.getByTestId("btn-clear-filters").click();
+
+    // then — filter params removed from URL, table still renders
+    await expect(page).not.toHaveURL(/action_type/);
+    await expect(page).not.toHaveURL(/user_email/);
+    await expect(page.getByTestId("data-table")).toBeVisible();
+  });
 });

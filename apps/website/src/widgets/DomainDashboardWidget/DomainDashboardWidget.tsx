@@ -2,24 +2,17 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
 import Alert from "@mui/material/Alert";
-import { useTheme } from "@mui/material/styles";
-import { Badge, LoadingSpinner, ErrorBanner } from "../../shared/ui/index.ts";
-import { useModulesQuery, useEventTypesQuery, useFlowsQuery } from "../../entities/domain/index.ts";
 import {
-  resolveActionLabel,
-  resolveModuleLabel,
-  resolveEventColor,
-} from "../../entities/log/index.ts";
+  useModulesQuery,
+  useCooccurrenceQuery,
+  useCascadeQuery,
+} from "../../entities/domain/index.ts";
+import { ModulesTab } from "./ModulesTab.tsx";
+import { CooccurrenceTab } from "./CooccurrenceTab.tsx";
+import { CascadeTab } from "./CascadeTab.tsx";
 
 export function DomainDashboardWidget() {
-  const {
-    palette: { colors },
-  } = useTheme();
   const [tab, setTab] = useState(0);
   const table = "audit_log";
 
@@ -30,17 +23,17 @@ export function DomainDashboardWidget() {
     refetch: refetchModules,
   } = useModulesQuery(table);
   const {
-    data: eventTypes,
-    isLoading: etLoading,
-    error: etError,
-    refetch: refetchEt,
-  } = useEventTypesQuery(table);
+    data: cooccurrence,
+    isLoading: coocLoading,
+    error: coocError,
+    refetch: refetchCooc,
+  } = useCooccurrenceQuery(table);
   const {
-    data: flows,
-    isLoading: flowsLoading,
-    error: flowsError,
-    refetch: refetchFlows,
-  } = useFlowsQuery(table);
+    data: cascade,
+    isLoading: cascadeLoading,
+    error: cascadeError,
+    refetch: refetchCascade,
+  } = useCascadeQuery(table);
 
   return (
     <Box>
@@ -50,92 +43,35 @@ export function DomainDashboardWidget() {
 
       <Tabs value={tab} onChange={(_, v: number) => setTab(v)} sx={{ mb: 2 }}>
         <Tab label="Modules" />
-        <Tab label="Event Types" />
-        <Tab label="Flows" />
+        <Tab label="Co-occurrence" />
+        <Tab label="Cascade Patterns" />
       </Tabs>
 
       {tab === 0 && (
-        <Box>
-          {modulesLoading && <LoadingSpinner />}
-          {modulesError && (
-            <ErrorBanner
-              message={(modulesError as Error).message}
-              onRetry={() => void refetchModules()}
-            />
-          )}
-          <Stack direction="row" flexWrap="wrap" gap={2}>
-            {modules?.map((m) => (
-              <Card key={m.entity_type} data-testid={`module-card-${m.entity_type}`}>
-                <CardContent>
-                  <Typography variant="h6">{resolveModuleLabel(m.entity_type)}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {m.event_count} events · {m.unique_correlations} correlations
-                  </Typography>
-                  <Box sx={{ mt: 1, display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-                    {m.event_types.map((et) => {
-                      const label = resolveActionLabel(et);
-                      return (
-                        <Badge key={et} label={label} accent={resolveEventColor(label, colors)} />
-                      );
-                    })}
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
-          </Stack>
-        </Box>
+        <ModulesTab
+          modules={modules}
+          isLoading={modulesLoading}
+          error={modulesError as Error | null}
+          refetch={refetchModules}
+        />
       )}
 
       {tab === 1 && (
-        <Box>
-          {etLoading && <LoadingSpinner />}
-          {etError && (
-            <ErrorBanner message={(etError as Error).message} onRetry={() => void refetchEt()} />
-          )}
-          <Stack spacing={1}>
-            {eventTypes?.map((et) => (
-              <Box key={et.event_type} sx={{ p: 1.5, bgcolor: "action.hover", borderRadius: 1 }}>
-                <Typography variant="subtitle2">{resolveActionLabel(et.event_type)}</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Count: {et.count} · Avg position: {et.avg_position}
-                </Typography>
-              </Box>
-            ))}
-          </Stack>
-        </Box>
+        <CooccurrenceTab
+          data={cooccurrence}
+          isLoading={coocLoading}
+          error={coocError as Error | null}
+          refetch={refetchCooc}
+        />
       )}
 
       {tab === 2 && (
-        <Box>
-          {flowsLoading && <LoadingSpinner />}
-          {flowsError && (
-            <ErrorBanner
-              message={(flowsError as Error).message}
-              onRetry={() => void refetchFlows()}
-            />
-          )}
-          <Stack spacing={1}>
-            {flows?.map((f, n) => (
-              <Box
-                key={n}
-                data-testid={`flow-sequence-${n}`}
-                sx={{ p: 1.5, bgcolor: "action.hover", borderRadius: 1 }}
-              >
-                <Typography variant="caption" color="text.secondary">
-                  ×{f.count}
-                </Typography>
-                <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mt: 0.5 }}>
-                  {f.flow.map((step, i) => {
-                    const label = resolveActionLabel(step);
-                    return (
-                      <Badge key={i} label={label} accent={resolveEventColor(label, colors)} />
-                    );
-                  })}
-                </Box>
-              </Box>
-            ))}
-          </Stack>
-        </Box>
+        <CascadeTab
+          data={cascade}
+          isLoading={cascadeLoading}
+          error={cascadeError as Error | null}
+          refetch={refetchCascade}
+        />
       )}
     </Box>
   );

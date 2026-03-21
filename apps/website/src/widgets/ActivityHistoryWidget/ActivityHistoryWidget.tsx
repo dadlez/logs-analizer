@@ -133,7 +133,12 @@ export function ActivityHistoryWidget() {
           <Select
             value={actionType !== undefined ? String(actionType) : ""}
             label="Action Type"
-            onChange={(e) => setSearch({ action_type: e.target.value || undefined, page: 1 })}
+            onChange={(e) =>
+              setSearch({
+                action_type: e.target.value ? Number(e.target.value) : undefined,
+                page: 1,
+              })
+            }
             inputProps={{ "data-testid": "filter-action-type" }}
           >
             <MenuItem value="">All</MenuItem>

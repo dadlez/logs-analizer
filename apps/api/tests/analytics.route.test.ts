@@ -34,6 +34,36 @@ describe("GET /api/analytics", () => {
     expect(res.statusCode).toBe(200);
   });
 
+  test("should return 200 when GET /api/analytics/cooccurrence is called", async () => {
+    // given
+    mockDb.unsafe.mockResolvedValue([]);
+    const app = buildApp({ db: mockDb, nodeEnv: "test" });
+
+    // when
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/analytics/cooccurrence?table=audit_log",
+    });
+
+    // then
+    expect(res.statusCode).toBe(200);
+  });
+
+  test("should return 200 when GET /api/analytics/cascade is called", async () => {
+    // given
+    mockDb.unsafe.mockResolvedValue([]);
+    const app = buildApp({ db: mockDb, nodeEnv: "test" });
+
+    // when
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/analytics/cascade?table=audit_log",
+    });
+
+    // then
+    expect(res.statusCode).toBe(200);
+  });
+
   test("should pass bucket param to db when bucket query param is provided", async () => {
     // given
     mockDb.unsafe.mockResolvedValue([]);

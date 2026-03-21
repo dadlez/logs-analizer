@@ -95,6 +95,18 @@ export interface FlowAnalytics {
   count: number;
 }
 
+export interface CooccurrenceEntry {
+  module_a: number;
+  module_b: number;
+  count: number;
+}
+
+export interface CascadePattern {
+  pattern: string[];
+  count: number;
+  avg_duration_ms: number;
+}
+
 export interface TimelineBucket {
   bucket: string;
   event_count: number;

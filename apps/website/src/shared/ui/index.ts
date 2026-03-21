@@ -8,3 +8,4 @@ export type { FilterBarField } from "./FilterBar.tsx";
 export { LoadingSpinner } from "./LoadingSpinner.tsx";
 export { ErrorBanner } from "./ErrorBanner.tsx";
 export { PageContainer } from "./PageContainer.tsx";
+export { HeatmapGrid } from "./HeatmapGrid.tsx";
