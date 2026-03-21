@@ -1,4 +1,4 @@
-import { apiFetch } from "../../shared/api/client.ts";
+import { apiFetch } from "../../shared/api/index.ts";
 import type { LogsResponse } from "contract";
 
 export interface LogsParams {
