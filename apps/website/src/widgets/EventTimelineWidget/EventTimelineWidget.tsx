@@ -6,15 +6,12 @@ import Divider from "@mui/material/Divider";
 import { useTheme } from "@mui/material/styles";
 import { Badge, LoadingSpinner, ErrorBanner } from "../../shared/ui/index.ts";
 import { useCorrelationDetailQuery } from "../../entities/correlation/index.ts";
+import { EntityTypeLabels, TypeLabels, EntityType, Type } from "../../entities/log/index.ts";
 import {
-  EntityTypeLabels,
-  TypeLabels,
-  EntityType,
-  Type,
   resolveModuleLabel,
   resolveModuleColor,
   resolveEventColor,
-} from "../../entities/log/index.ts";
+} from "../../shared/lib/domain.ts";
 
 interface EventTimelineWidgetProps {
   id: string;

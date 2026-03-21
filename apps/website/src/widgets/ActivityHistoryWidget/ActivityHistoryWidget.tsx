@@ -11,13 +11,12 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable, Badge, BadgePillList } from "../../shared/ui/index.ts";
 import { useHistoryQuery } from "../../entities/history/index.ts";
 import { useSearch, useNavigate } from "@tanstack/react-router";
+import { TypeLabels, TypeOptions } from "../../entities/log/index.ts";
 import {
-  TypeLabels,
-  TypeOptions,
   resolveModuleLabel,
   resolveEventColor,
   resolveModuleColor,
-} from "../../entities/log/index.ts";
+} from "../../shared/lib/domain.ts";
 import type { HistoryEntry } from "../../entities/history/index.ts";
 import type { Type, EntityType } from "../../entities/log/index.ts";
 

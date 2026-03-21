@@ -8,12 +8,8 @@ import { LogsFiltersPanel, useLogFilters } from "../../features/filter-logs/inde
 import { useTableSelection } from "../../features/select-table/index.ts";
 import { useCorrelationNavigation } from "../../features/view-correlation/index.ts";
 import type { LogRow } from "../../entities/log/index.ts";
-import {
-  TypeLabels,
-  EntityTypeLabels,
-  resolveEventColor,
-  resolveModuleColor,
-} from "../../entities/log/index.ts";
+import { TypeLabels, EntityTypeLabels } from "../../entities/log/index.ts";
+import { resolveEventColor, resolveModuleColor } from "../../shared/lib/domain.ts";
 import type { Type, EntityType } from "../../entities/log/index.ts";
 
 function useColumns(): ColumnDef<LogRow>[] {

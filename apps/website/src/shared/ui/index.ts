@@ -6,6 +6,8 @@ export { LoadingSpinner } from "./layout/LoadingSpinner.tsx";
 export { ErrorBanner } from "./layout/ErrorBanner.tsx";
 export { Badge } from "./layout/Badge.tsx";
 export { BadgePillList } from "./layout/BadgePillList.tsx";
+export { ModulePill } from "./layout/ModulePill.tsx";
+export { ActionPill } from "./layout/ActionPill.tsx";
 export { DataTable } from "./table/DataTable.tsx";
 export { HeatmapGrid } from "./table/HeatmapGrid.tsx";
 export { FilterBar } from "./form/FilterBar.tsx";

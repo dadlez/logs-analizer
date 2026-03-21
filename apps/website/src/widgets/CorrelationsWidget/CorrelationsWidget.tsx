@@ -7,7 +7,7 @@ import { useCorrelationsQuery } from "../../entities/correlation/index.ts";
 import { useCorrelationNavigation } from "../../features/view-correlation/index.ts";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import type { CorrelationSummary } from "../../entities/correlation/index.ts";
-import { resolveModuleLabel, resolveModuleColor } from "../../entities/log/index.ts";
+import { resolveModuleLabel, resolveModuleColor } from "../../shared/lib/domain.ts";
 
 function useColumns(): ColumnDef<CorrelationSummary>[] {
   const {

@@ -1,13 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
-import { useTheme } from "@mui/material/styles";
-import { Badge, LoadingSpinner, ErrorBanner } from "../../shared/ui/index.ts";
-import {
-  resolveActionLabel,
-  resolveModuleLabel,
-  resolveEventColor,
-} from "../../entities/log/index.ts";
+import { ModulePill, ActionPill, LoadingSpinner, ErrorBanner } from "../../shared/ui/index.ts";
 import type { CascadePattern } from "../../entities/domain/index.ts";
 
 function parseCascadeStep(step: string): { entity_type: number; event_type: string } {
@@ -23,10 +17,6 @@ interface CascadeTabProps {
 }
 
 export function CascadeTab({ data, isLoading, error, refetch }: CascadeTabProps) {
-  const {
-    palette: { colors },
-  } = useTheme();
-
   return (
     <Box>
       {isLoading && <LoadingSpinner />}
@@ -63,10 +53,10 @@ export function CascadeTab({ data, isLoading, error, refetch }: CascadeTabProps)
                   </Typography>
                   <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0.5 }}>
                     {trigger && (
-                      <Badge
-                        label={`${resolveModuleLabel(trigger.entity_type)}: ${resolveActionLabel(trigger.event_type)}`}
-                        accent={resolveEventColor(resolveActionLabel(trigger.event_type), colors)}
-                      />
+                      <>
+                        <ModulePill value={trigger.entity_type} />
+                        <ActionPill value={trigger.event_type} />
+                      </>
                     )}
                     {reactions.length > 0 && (
                       <Typography variant="caption" sx={{ px: 0.5, color: "text.secondary" }}>
@@ -74,11 +64,10 @@ export function CascadeTab({ data, isLoading, error, refetch }: CascadeTabProps)
                       </Typography>
                     )}
                     {reactions.map((step, j) => (
-                      <Badge
-                        key={j}
-                        label={`${resolveModuleLabel(step.entity_type)}: ${resolveActionLabel(step.event_type)}`}
-                        accent={resolveEventColor(resolveActionLabel(step.event_type), colors)}
-                      />
+                      <Box key={j} sx={{ display: "flex", gap: 0.5 }}>
+                        <ModulePill value={step.entity_type} />
+                        <ActionPill value={step.event_type} />
+                      </Box>
                     ))}
                   </Box>
                   <Typography

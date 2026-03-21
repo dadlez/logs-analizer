@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { LoadingSpinner, ErrorBanner, HeatmapGrid, SectionHeading } from "../../shared/ui/index.ts";
-import { resolveModuleLabel } from "../../entities/log/index.ts";
+import { resolveModuleLabel } from "../../shared/lib/domain.ts";
 import type { CooccurrenceEntry, ModuleAnalytics } from "../../entities/domain/index.ts";
 import { EntityType } from "contract";
 import {
