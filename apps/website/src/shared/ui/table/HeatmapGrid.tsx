@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
 
 interface HeatmapGridProps {
   labels: string[];
   getValue: (row: string, col: string) => number;
-  formatLabel?: (label: string) => string;
+  renderLabel?: (label: string) => ReactNode;
   getTooltip?: (row: string, col: string, count: number) => string;
   formatCell?: (value: number) => string;
 }
@@ -12,7 +13,7 @@ interface HeatmapGridProps {
 export function HeatmapGrid({
   labels,
   getValue,
-  formatLabel,
+  renderLabel,
   getTooltip,
   formatCell = (v) => (v > 0 ? String(v) : ""),
 }: HeatmapGridProps) {
@@ -42,7 +43,7 @@ export function HeatmapGrid({
                 }}
               >
                 <Tooltip title={label}>
-                  <span>{formatLabel ? formatLabel(label) : label}</span>
+                  <span>{renderLabel ? renderLabel(label) : label}</span>
                 </Tooltip>
               </Box>
             ))}
@@ -62,7 +63,7 @@ export function HeatmapGrid({
                   pr: 1,
                 }}
               >
-                {formatLabel ? formatLabel(rowLabel) : rowLabel}
+                {renderLabel ? renderLabel(rowLabel) : rowLabel}
               </Box>
               {labels.map((colLabel) => {
                 const isDiagonal = rowLabel === colLabel;

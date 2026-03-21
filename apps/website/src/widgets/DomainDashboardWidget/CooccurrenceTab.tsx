@@ -1,5 +1,11 @@
 import Box from "@mui/material/Box";
-import { LoadingSpinner, ErrorBanner, HeatmapGrid, SectionHeading } from "../../shared/ui/index.ts";
+import {
+  LoadingSpinner,
+  ErrorBanner,
+  HeatmapGrid,
+  SectionHeading,
+  ModulePill,
+} from "../../shared/ui/index.ts";
 import { resolveModuleLabel } from "../../shared/lib/domain.ts";
 import type { CooccurrenceEntry, ModuleAnalytics } from "../../entities/domain/index.ts";
 import { EntityType } from "contract";
@@ -19,7 +25,6 @@ const ALL_MODULES = [
   EntityType.ContractFundingEntity,
 ];
 
-const formatLabel = (label: string) => label.replace("Entity", "");
 const formatCell = (v: number) => (v > 0 ? `${Math.round(v)}%` : "");
 const getRawTooltip = (row: string, col: string, count: number) =>
   count > 0 ? `${row} ↔ ${col}: ${count}` : "";
@@ -79,7 +84,7 @@ export function CooccurrenceTab({
           <HeatmapGrid
             labels={labels}
             getValue={getValue}
-            formatLabel={formatLabel}
+            renderLabel={(label) => <ModulePill value={label} />}
             getTooltip={getRawTooltip}
           />
 
@@ -91,7 +96,7 @@ export function CooccurrenceTab({
             <HeatmapGrid
               labels={labels}
               getValue={getPercentageValueForLabel}
-              formatLabel={formatLabel}
+              renderLabel={(label) => <ModulePill value={label} />}
               getTooltip={getPercentageTooltipForLabel}
               formatCell={formatCell}
             />
