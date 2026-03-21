@@ -1,9 +1,13 @@
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { LoadingSpinner, ErrorBanner, HeatmapGrid } from "../../shared/ui/index.ts";
+import { LoadingSpinner, ErrorBanner, HeatmapGrid, SectionHeading } from "../../shared/ui/index.ts";
 import { resolveModuleLabel } from "../../entities/log/index.ts";
-import type { CooccurrenceEntry } from "../../entities/domain/index.ts";
+import type { CooccurrenceEntry, ModuleAnalytics } from "../../entities/domain/index.ts";
 import { EntityType } from "contract";
+import {
+  getCooccurrenceCount,
+  getPercentageValue,
+  getPercentageTooltip,
+} from "./cooccurrenceHelpers.ts";
 
 const ALL_MODULES = [
   EntityType.ContractHeaderEntity,
@@ -15,49 +19,83 @@ const ALL_MODULES = [
   EntityType.ContractFundingEntity,
 ];
 
-function getCooccurrenceCount(entries: CooccurrenceEntry[], a: number, b: number): number {
-  if (a === b) return 0;
-  const [lo, hi] = a < b ? [a, b] : [b, a];
-  return entries.find((e) => e.module_a === lo && e.module_b === hi)?.count ?? 0;
-}
+const formatLabel = (label: string) => label.replace("Entity", "");
+const formatCell = (v: number) => (v > 0 ? `${Math.round(v)}%` : "");
+const getRawTooltip = (row: string, col: string, count: number) =>
+  count > 0 ? `${row} ↔ ${col}: ${count}` : "";
 
 interface CooccurrenceTabProps {
   data: CooccurrenceEntry[] | undefined;
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
+  modules: ModuleAnalytics[];
 }
 
-export function CooccurrenceTab({ data, isLoading, error, refetch }: CooccurrenceTabProps) {
+export function CooccurrenceTab({
+  data,
+  isLoading,
+  error,
+  refetch,
+  modules,
+}: CooccurrenceTabProps) {
   const labels = ALL_MODULES.map((m) => resolveModuleLabel(m));
 
+  const uniqueCorrelationsMap = new Map<number, number>(
+    modules.map((m) => [m.entity_type, m.unique_correlations]),
+  );
+
+  const resolveModules = (rowLabel: string, colLabel: string) => ({
+    rowModule: ALL_MODULES.find((m) => resolveModuleLabel(m) === rowLabel),
+    colModule: ALL_MODULES.find((m) => resolveModuleLabel(m) === colLabel),
+  });
+
   const getValue = (rowLabel: string, colLabel: string): number => {
-    const rowModule = ALL_MODULES.find((m) => resolveModuleLabel(m) === rowLabel);
-    const colModule = ALL_MODULES.find((m) => resolveModuleLabel(m) === colLabel);
+    const { rowModule, colModule } = resolveModules(rowLabel, colLabel);
     if (rowModule === undefined || colModule === undefined || !data) return 0;
     return getCooccurrenceCount(data, rowModule, colModule);
   };
 
-  const formatLabel = (label: string) => label.replace("Entity", "");
+  const getPercentageValueForLabel = (rowLabel: string, colLabel: string): number => {
+    const { rowModule, colModule } = resolveModules(rowLabel, colLabel);
+    return getPercentageValue(rowModule, colModule, data, uniqueCorrelationsMap);
+  };
 
-  const getTooltip = (row: string, col: string, count: number) =>
-    count > 0 ? `${row} ↔ ${col}: ${count}` : "";
+  const getPercentageTooltipForLabel = (row: string, col: string): string => {
+    const { rowModule, colModule } = resolveModules(row, col);
+    return getPercentageTooltip(row, col, rowModule, colModule, data, uniqueCorrelationsMap);
+  };
 
   return (
     <Box>
       {isLoading && <LoadingSpinner />}
-      {error && <ErrorBanner message={error.message} onRetry={() =>  refetch()} />}
+      {error && <ErrorBanner message={error.message} onRetry={() => refetch()} />}
       {data && (
         <>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-            Number of correlations containing both modules. Higher count = tighter coupling.
-          </Typography>
+          <SectionHeading
+            title="Raw co-occurrence counts"
+            description="Number of correlations containing both modules. Higher count = tighter coupling."
+          />
           <HeatmapGrid
             labels={labels}
             getValue={getValue}
             formatLabel={formatLabel}
-            getTooltip={getTooltip}
+            getTooltip={getRawTooltip}
           />
+
+          <Box sx={{ mt: 3 }}>
+            <SectionHeading
+              title="Coupling strength (% of row module's correlations that include column module)"
+              description="P(col | row) — directional: row is the base module."
+            />
+            <HeatmapGrid
+              labels={labels}
+              getValue={getPercentageValueForLabel}
+              formatLabel={formatLabel}
+              getTooltip={getPercentageTooltipForLabel}
+              formatCell={formatCell}
+            />
+          </Box>
         </>
       )}
     </Box>

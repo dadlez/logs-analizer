@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import { LoadingSpinner } from "./LoadingSpinner.tsx";
+import { LoadingSpinner } from "../layout/LoadingSpinner.tsx";
 
 interface DataTableProps<T extends object> {
   columns: ColumnDef<T, unknown>[];

@@ -6,9 +6,16 @@ interface HeatmapGridProps {
   getValue: (row: string, col: string) => number;
   formatLabel?: (label: string) => string;
   getTooltip?: (row: string, col: string, count: number) => string;
+  formatCell?: (value: number) => string;
 }
 
-export function HeatmapGrid({ labels, getValue, formatLabel, getTooltip }: HeatmapGridProps) {
+export function HeatmapGrid({
+  labels,
+  getValue,
+  formatLabel,
+  getTooltip,
+  formatCell = (v) => (v > 0 ? String(v) : ""),
+}: HeatmapGridProps) {
   const allCounts = labels.flatMap((row) => labels.map((col) => getValue(row, col)));
   const maxCount = Math.max(...allCounts, 1);
 
@@ -89,7 +96,7 @@ export function HeatmapGrid({ labels, getValue, formatLabel, getTooltip }: Heatm
                         "&:hover": count > 0 ? { opacity: 0.8 } : {},
                       }}
                     >
-                      {count > 0 ? count : ""}
+                      {formatCell(count)}
                     </Box>
                   </Tooltip>
                 );

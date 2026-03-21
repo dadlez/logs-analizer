@@ -27,7 +27,7 @@ export function ModulesTab({ modules, isLoading, error, refetch }: ModulesTabPro
   return (
     <Box>
       {isLoading && <LoadingSpinner />}
-      {error && <ErrorBanner message={error.message} onRetry={() =>  refetch()} />}
+      {error && <ErrorBanner message={error.message} onRetry={() => refetch()} />}
       <Stack direction="row" flexWrap="wrap" gap={2}>
         {modules?.map((m) => (
           <Card key={m.entity_type} data-testid={`module-card-${m.entity_type}`}>

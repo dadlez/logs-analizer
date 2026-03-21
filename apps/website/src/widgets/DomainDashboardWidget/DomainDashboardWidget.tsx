@@ -62,6 +62,7 @@ export function DomainDashboardWidget() {
           isLoading={coocLoading}
           error={coocError as Error | null}
           refetch={refetchCooc}
+          modules={modules ?? []}
         />
       )}
 

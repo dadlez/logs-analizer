@@ -30,7 +30,7 @@ export function CascadeTab({ data, isLoading, error, refetch }: CascadeTabProps)
   return (
     <Box>
       {isLoading && <LoadingSpinner />}
-      {error && <ErrorBanner message={error.message} onRetry={() =>  refetch()} />}
+      {error && <ErrorBanner message={error.message} onRetry={() => refetch()} />}
       {data && (
         <>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
