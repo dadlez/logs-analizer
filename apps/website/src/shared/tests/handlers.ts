@@ -58,11 +58,20 @@ export const mockSchemaTable: SchemaTable = {
 
 export const mockLogRow = {
   id: 1,
-  correlation_id: "corr-001",
+  organization_id: "org-001",
+  user_id: "user-001",
   user_email: "test@example.com",
   type: 1,
   entity_type: 1,
   created_date: "2026-01-01T10:00:00",
+  old_values: null,
+  new_values: null,
+  affected_columns: null,
+  primary_key: null,
+  entity_id: "entity-001",
+  parent_id: null,
+  correlation_id: "corr-001",
+  sub_unit_id: null,
 };
 
 export const mockLogsResponse: LogsResponse = {

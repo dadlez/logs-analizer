@@ -2,9 +2,15 @@ import Chip from "@mui/material/Chip";
 
 interface BadgeProps {
   label: string;
-  variant?: "module" | "event-type";
+  accent: string;
 }
 
-export function Badge({ label, variant = "module" }: BadgeProps) {
-  return <Chip label={label} size="small" color={variant === "module" ? "primary" : "secondary"} />;
+export function Badge({ label, accent }: BadgeProps) {
+  return (
+    <Chip
+      label={label}
+      size="small"
+      sx={{ backgroundColor: accent, color: "#fff", fontWeight: 500 }}
+    />
+  );
 }

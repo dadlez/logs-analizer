@@ -8,6 +8,7 @@ dist-ssr
 
 # Editor directories and files
 .idea
+.superpowers
 
 # Environment files
 .env

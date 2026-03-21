@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import type { DbClient } from "../db";
+import { validateIdentifier } from "../utils";
 
 export interface CorrelationsQueryParams {
   table: string;
@@ -55,14 +56,6 @@ export function buildCorrelationDetailQuery(params: {
     table: params.table,
     correlationId: params.correlationId,
   };
-}
-
-const SAFE_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
-
-function validateIdentifier(name: string): void {
-  if (!SAFE_IDENTIFIER.test(name)) {
-    throw new Error(`Invalid identifier: ${name}`);
-  }
 }
 
 export function correlationsRoute(fastify: FastifyInstance, db: DbClient) {

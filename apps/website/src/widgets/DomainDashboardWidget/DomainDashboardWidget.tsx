@@ -6,15 +6,22 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import Alert from "@mui/material/Alert";
+import { useTheme } from "@mui/material/styles";
 import { Badge, LoadingSpinner, ErrorBanner } from "../../shared/ui/index.ts";
 import { useModulesQuery, useEventTypesQuery, useFlowsQuery } from "../../entities/domain/index.ts";
-import { resolveActionLabel, resolveModuleLabel } from "../../entities/log/index.ts";
-import { TableSelector } from "../../features/select-table/index.ts";
-import { useTableSelection } from "../../features/select-table/index.ts";
+import {
+  resolveActionLabel,
+  resolveModuleLabel,
+  resolveEventColor,
+} from "../../entities/log/index.ts";
 
 export function DomainDashboardWidget() {
+  const {
+    palette: { colors },
+  } = useTheme();
   const [tab, setTab] = useState(0);
-  const { table } = useTableSelection();
+  const table = "audit_log";
 
   const {
     data: modules,
@@ -37,9 +44,9 @@ export function DomainDashboardWidget() {
 
   return (
     <Box>
-      <Box sx={{ mb: 2 }}>
-        <TableSelector />
-      </Box>
+      <Alert severity="info" sx={{ mb: 2 }}>
+        Showing data from the audit_log table
+      </Alert>
 
       <Tabs value={tab} onChange={(_, v: number) => setTab(v)} sx={{ mb: 2 }}>
         <Tab label="Modules" />
@@ -65,9 +72,12 @@ export function DomainDashboardWidget() {
                     {m.event_count} events · {m.unique_correlations} correlations
                   </Typography>
                   <Box sx={{ mt: 1, display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-                    {m.event_types.map((et) => (
-                      <Badge key={et} label={resolveActionLabel(et)} variant="event-type" />
-                    ))}
+                    {m.event_types.map((et) => {
+                      const label = resolveActionLabel(et);
+                      return (
+                        <Badge key={et} label={label} accent={resolveEventColor(label, colors)} />
+                      );
+                    })}
                   </Box>
                 </CardContent>
               </Card>
@@ -115,9 +125,12 @@ export function DomainDashboardWidget() {
                   ×{f.count}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mt: 0.5 }}>
-                  {f.flow.map((step, i) => (
-                    <Badge key={i} label={resolveActionLabel(step)} variant="event-type" />
-                  ))}
+                  {f.flow.map((step, i) => {
+                    const label = resolveActionLabel(step);
+                    return (
+                      <Badge key={i} label={label} accent={resolveEventColor(label, colors)} />
+                    );
+                  })}
                 </Box>
               </Box>
             ))}

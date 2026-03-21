@@ -1,13 +1,50 @@
 import { createTheme } from "@mui/material/styles";
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    colors: {
+      navy: string;
+      purple: string;
+      cyan: string;
+      mint: string;
+      orange: string;
+      amber: string;
+      blue: string;
+      slate: string;
+      red: string;
+    };
+  }
+  interface PaletteOptions {
+    colors?: {
+      navy?: string;
+      purple?: string;
+      cyan?: string;
+      mint?: string;
+      orange?: string;
+      amber?: string;
+      blue?: string;
+      slate?: string;
+      red?: string;
+    };
+  }
+}
+
 export const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#1976D2",
+      main: "#1A2569",
     },
-    secondary: {
-      main: "#6A1B9A",
+    colors: {
+      navy: "#1A2569",
+      purple: "#A971F6",
+      cyan: "#0FBFF1",
+      mint: "#06C89B",
+      orange: "#FA8544",
+      amber: "#E0A800",
+      blue: "#3B82F6",
+      slate: "#94A3B8",
+      red: "#EF4444",
     },
     background: {
       default: "#F8F9FB",

@@ -3,9 +3,18 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
+import { useTheme } from "@mui/material/styles";
 import { Badge, LoadingSpinner, ErrorBanner } from "../../shared/ui/index.ts";
 import { useCorrelationDetailQuery } from "../../entities/correlation/index.ts";
-import { EntityTypeLabels, TypeLabels, EntityType, Type } from "../../entities/log/index.ts";
+import {
+  EntityTypeLabels,
+  TypeLabels,
+  EntityType,
+  Type,
+  resolveModuleLabel,
+  resolveModuleColor,
+  resolveEventColor,
+} from "../../entities/log/index.ts";
 
 interface EventTimelineWidgetProps {
   id: string;
@@ -13,6 +22,9 @@ interface EventTimelineWidgetProps {
 }
 
 export function EventTimelineWidget({ id, table }: EventTimelineWidgetProps) {
+  const {
+    palette: { colors },
+  } = useTheme();
   const { data, isLoading, error, refetch } = useCorrelationDetailQuery(id, table);
 
   if (isLoading) return <LoadingSpinner />;
@@ -27,17 +39,18 @@ export function EventTimelineWidget({ id, table }: EventTimelineWidgetProps) {
           Correlation: {data.correlation_id}
         </Typography>
         <Box sx={{ display: "flex", gap: 1, mt: 1, flexWrap: "wrap" }}>
-          {data.modules.map((m) => (
-            <Badge key={m} label={m} variant="module" />
-          ))}
+          {data.modules.map((m) => {
+            const label = resolveModuleLabel(m);
+            return <Badge key={m} label={label} accent={resolveModuleColor(label, colors)} />;
+          })}
         </Box>
       </Paper>
 
       <Box data-testid="event-timeline">
         <Stack divider={<Divider />} spacing={0}>
-          {(data.events as Record<string, unknown>[]).map((event, n) => {
-            const eventType = event["type"] as number | undefined;
-            const entityType = event["entity_type"] as number | undefined;
+          {data.events.map((event, n) => {
+            const eventType = event.type;
+            const entityType = event.entity_type;
 
             return (
               <Box
@@ -49,20 +62,19 @@ export function EventTimelineWidget({ id, table }: EventTimelineWidgetProps) {
                   <Typography variant="caption" color="text.secondary">
                     #{n + 1}
                   </Typography>
-                  {eventType !== undefined && (
-                    <Badge
-                      label={TypeLabels[eventType as Type] ?? String(eventType)}
-                      variant="event-type"
-                    />
-                  )}
-                  {entityType !== undefined && (
-                    <Badge
-                      label={EntityTypeLabels[entityType as EntityType] ?? String(entityType)}
-                      variant="module"
-                    />
-                  )}
+                  {eventType !== undefined &&
+                    (() => {
+                      const label = TypeLabels[eventType as Type] ?? String(eventType);
+                      return <Badge label={label} accent={resolveEventColor(label, colors)} />;
+                    })()}
+                  {entityType !== undefined &&
+                    (() => {
+                      const label =
+                        EntityTypeLabels[entityType as EntityType] ?? String(entityType);
+                      return <Badge label={label} accent={resolveModuleColor(label, colors)} />;
+                    })()}
                   <Typography variant="caption" color="text.secondary" sx={{ ml: "auto" }}>
-                    {(event["created_date"] as string) ?? ""}
+                    {event.created_date}
                   </Typography>
                 </Box>
               </Box>

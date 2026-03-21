@@ -19,7 +19,21 @@ export type SchemaResponse = SchemaTable[];
 
 // Logs
 export interface LogRow {
-  [key: string]: unknown;
+  id: number;
+  organization_id: string;
+  user_id: string;
+  user_email: string;
+  type: Type;
+  entity_type: EntityType;
+  created_date: string;
+  old_values: string | null;
+  new_values: string | null;
+  affected_columns: string | null;
+  primary_key: string | null;
+  entity_id: string;
+  parent_id: string | null;
+  correlation_id: string;
+  sub_unit_id: string | null;
 }
 
 export interface LogsResponse {
@@ -47,6 +61,9 @@ export interface CorrelationsResponse {
 }
 
 export interface CorrelationEvent {
+  type: Type;
+  entity_type: EntityType;
+  created_date: string;
   [key: string]: unknown;
 }
 

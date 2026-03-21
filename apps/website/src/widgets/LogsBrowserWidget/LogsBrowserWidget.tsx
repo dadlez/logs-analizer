@@ -1,33 +1,73 @@
 import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "../../shared/ui/index.ts";
+import { DataTable, Badge } from "../../shared/ui/index.ts";
 import { useLogsQuery } from "../../entities/log/index.ts";
 import { TableSelector } from "../../features/select-table/index.ts";
 import { LogsFiltersPanel, useLogFilters } from "../../features/filter-logs/index.ts";
 import { useTableSelection } from "../../features/select-table/index.ts";
 import { useCorrelationNavigation } from "../../features/view-correlation/index.ts";
 import type { LogRow } from "../../entities/log/index.ts";
-import { TypeLabels, EntityTypeLabels } from "../../entities/log/index.ts";
+import {
+  TypeLabels,
+  EntityTypeLabels,
+  resolveEventColor,
+  resolveModuleColor,
+} from "../../entities/log/index.ts";
 import type { Type, EntityType } from "../../entities/log/index.ts";
 
-const columns: ColumnDef<LogRow, unknown>[] = [
-  { accessorKey: "id", header: "ID" },
-  { accessorKey: "correlation_id", header: "Correlation ID" },
-  { accessorKey: "user_email", header: "User" },
-  {
+function useColumns(): ColumnDef<LogRow>[] {
+  const {
+    palette: { colors },
+  } = useTheme();
+  const colId: ColumnDef<LogRow, number> = { accessorKey: "id", header: "ID" };
+  const colCorrelationId: ColumnDef<LogRow, string> = {
+    accessorKey: "correlation_id",
+    header: "Correlation ID",
+    cell: (info) => (
+      <Box
+        sx={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+      >
+        {info.getValue()}
+      </Box>
+    ),
+  };
+  const colUserEmail: ColumnDef<LogRow, string> = {
+    accessorKey: "user_email",
+    header: "User",
+    cell: (info) => (
+      <Box
+        sx={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+      >
+        {info.getValue()}
+      </Box>
+    ),
+  };
+  const colType: ColumnDef<LogRow, Type> = {
     accessorKey: "type",
     header: "Action",
-    cell: (info) => TypeLabels[info.getValue() as Type] ?? String(info.getValue()),
-  },
-  {
+    cell: (info) => {
+      const label = TypeLabels[info.getValue()] ?? String(info.getValue());
+      return <Badge label={label} accent={resolveEventColor(label, colors)} />;
+    },
+  };
+  const colEntityType: ColumnDef<LogRow, EntityType> = {
     accessorKey: "entity_type",
     header: "Entity Type",
-    cell: (info) => EntityTypeLabels[info.getValue() as EntityType] ?? String(info.getValue()),
-  },
-  { accessorKey: "created_date", header: "Created At" },
-];
+    cell: (info) => {
+      const label = EntityTypeLabels[info.getValue()] ?? String(info.getValue());
+      return <Badge label={label} accent={resolveModuleColor(label, colors)} />;
+    },
+  };
+  const colCreatedDate: ColumnDef<LogRow, string> = {
+    accessorKey: "created_date",
+    header: "Created At",
+  };
+  return [colId, colCorrelationId, colUserEmail, colType, colEntityType, colCreatedDate];
+}
 
 export function LogsBrowserWidget() {
+  const columns = useColumns();
   const { table } = useTableSelection();
   const { filters, setPage, setFilters } = useLogFilters();
   const { navigateToCorrelation } = useCorrelationNavigation();

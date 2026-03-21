@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { Type } from "contract";
 import type { DbClient } from "../db";
+import { validateIdentifier } from "../utils";
 
 export interface HistoryQueryParams {
   table: string;
@@ -38,14 +39,6 @@ export function buildHistoryQuery(params: HistoryQueryParams): HistoryQueryDescr
     limit,
     offset,
   };
-}
-
-const SAFE_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
-
-function validateIdentifier(name: string): void {
-  if (!SAFE_IDENTIFIER.test(name)) {
-    throw new Error(`Invalid identifier: ${name}`);
-  }
 }
 
 const VALID_ACTION_TYPES = new Set(
@@ -151,8 +144,20 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
       db.unsafe(countSql, params as string[]) as Promise<{ count: string }[]>,
     ]);
 
+    const data = (rows as Array<Record<string, unknown>>).map((row) => {
+      if (typeof row["contract_number"] === "string") {
+        try {
+          const parsed = JSON.parse(row["contract_number"]) as { id?: string };
+          row["contract_number"] = parsed.id ?? row["contract_number"];
+        } catch {
+          // leave as-is if not valid JSON
+        }
+      }
+      return row;
+    });
+
     return reply.send({
-      data: rows,
+      data,
       total: parseInt(countResult[0]?.count ?? "0", 10),
       page: Math.floor(q.offset / q.limit) + 1,
       limit: q.limit,

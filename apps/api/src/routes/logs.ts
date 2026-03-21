@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import type { DbClient } from "../db";
+import { validateIdentifier } from "../utils";
 
 export interface LogsQueryParams {
   table: string;
@@ -53,14 +54,6 @@ export function buildLogsQuery(params: LogsQueryParams): LogsQueryDescriptor {
     limit,
     offset,
   };
-}
-
-const SAFE_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
-
-function validateIdentifier(name: string): void {
-  if (!SAFE_IDENTIFIER.test(name)) {
-    throw new Error(`Invalid identifier: ${name}`);
-  }
 }
 
 function buildSqlParts(q: LogsQueryDescriptor): { whereClause: string; params: unknown[] } {

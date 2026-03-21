@@ -1,44 +1,99 @@
 import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
+import { useTheme } from "@mui/material/styles";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "../../shared/ui/index.ts";
+import { DataTable, Badge, BadgePillList } from "../../shared/ui/index.ts";
 import { useHistoryQuery } from "../../entities/history/index.ts";
-import { TableSelector } from "../../features/select-table/index.ts";
-import { useTableSelection } from "../../features/select-table/index.ts";
 import { useSearch, useNavigate } from "@tanstack/react-router";
-import { TypeLabels, TypeOptions, EntityTypeLabels, EntityType } from "../../entities/log/index.ts";
+import {
+  TypeLabels,
+  TypeOptions,
+  resolveModuleLabel,
+  resolveEventColor,
+  resolveModuleColor,
+} from "../../entities/log/index.ts";
 import type { HistoryEntry } from "../../entities/history/index.ts";
-import type { Type } from "../../entities/log/index.ts";
+import type { Type, EntityType } from "../../entities/log/index.ts";
 
-const columns: ColumnDef<HistoryEntry, unknown>[] = [
-  { accessorKey: "user_email", header: "User Email" },
-  {
+function useColumns(): ColumnDef<HistoryEntry>[] {
+  const {
+    palette: { colors },
+  } = useTheme();
+  const colUserEmail: ColumnDef<HistoryEntry, string> = {
+    accessorKey: "user_email",
+    header: "User Email",
+    cell: (info) => (
+      <Box
+        sx={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+      >
+        {info.getValue()}
+      </Box>
+    ),
+  };
+  const colActionType: ColumnDef<HistoryEntry, Type> = {
     accessorKey: "action_type",
     header: "Action Type",
-    cell: (info) => TypeLabels[info.getValue() as Type] ?? String(info.getValue()),
-  },
-  { accessorKey: "contract_number", header: "Contract" },
-  { accessorKey: "started_at", header: "Started At" },
-  { accessorKey: "duration_ms", header: "Duration (ms)" },
-  { accessorKey: "entity_count", header: "Entities" },
-  {
+    cell: (info) => {
+      const label = TypeLabels[info.getValue()] ?? String(info.getValue());
+      return <Badge label={label} accent={resolveEventColor(label, colors)} />;
+    },
+  };
+  const colContractNumber: ColumnDef<HistoryEntry, string | null> = {
+    accessorKey: "contract_number",
+    header: "Contract",
+    cell: (info) => (
+      <Box
+        sx={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+      >
+        {info.getValue() ?? ""}
+      </Box>
+    ),
+  };
+  const colStartedAt: ColumnDef<HistoryEntry, string> = {
+    accessorKey: "started_at",
+    header: "Started At",
+  };
+  const colDuration: ColumnDef<HistoryEntry, number> = {
+    accessorKey: "duration_ms",
+    header: "Duration (ms)",
+  };
+  const colEntityCount: ColumnDef<HistoryEntry, number> = {
+    accessorKey: "entity_count",
+    header: "Entity Count",
+  };
+  const colEntityTypes: ColumnDef<HistoryEntry, EntityType[]> = {
     accessorKey: "entity_types",
     header: "Entity Types",
     cell: (info) => {
-      const types = info.getValue() as number[];
-      if (!Array.isArray(types)) return "";
-      return types.map((t) => EntityTypeLabels[t as EntityType] ?? String(t)).join(", ");
+      const labels = info.getValue().map((t) => resolveModuleLabel(t));
+      return (
+        <BadgePillList
+          labels={labels}
+          resolveAccent={(label) => resolveModuleColor(label, colors)}
+        />
+      );
     },
-  },
-];
+  };
+  return [
+    colUserEmail,
+    colActionType,
+    colContractNumber,
+    colStartedAt,
+    colDuration,
+    colEntityCount,
+    colEntityTypes,
+  ];
+}
 
 export function ActivityHistoryWidget() {
-  const { table } = useTableSelection();
+  const columns = useColumns();
+  const table = "audit_log";
   const search = useSearch({ strict: false }) as Record<string, unknown>;
   const navigate = useNavigate();
 
@@ -62,8 +117,10 @@ export function ActivityHistoryWidget() {
 
   return (
     <Box data-testid="history-table">
+      <Alert severity="info" sx={{ mb: 2 }}>
+        Showing data from the audit_log table
+      </Alert>
       <Box sx={{ mb: 2, display: "flex", gap: 2, flexWrap: "wrap", alignItems: "flex-end" }}>
-        <TableSelector />
         <TextField
           size="small"
           label="User Email"
@@ -100,7 +157,7 @@ export function ActivityHistoryWidget() {
       <DataTable
         columns={columns}
         data={data?.data ?? []}
-        isLoading={isLoading && !!table}
+        isLoading={isLoading}
         page={data?.page ?? 1}
         total={data?.total ?? 0}
         limit={data?.limit ?? 10}

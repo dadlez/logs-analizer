@@ -7,6 +7,8 @@ export {
   EntityTypeLabels,
   resolveActionLabel,
   resolveModuleLabel,
+  resolveModuleColor,
+  resolveEventColor,
 } from "./model.ts";
 export { fetchLogs } from "./api.ts";
 export type { LogsParams } from "./api.ts";

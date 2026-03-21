@@ -1,14 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import type { DbClient } from "../db";
-
-const SAFE_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
-
-function validateIdentifier(name: string): void {
-  if (!SAFE_IDENTIFIER.test(name)) {
-    throw new Error(`Invalid identifier: ${name}`);
-  }
-}
+import { validateIdentifier } from "../utils";
 
 export function analyticsRoute(fastify: FastifyInstance, db: DbClient) {
   fastify.get<{ Querystring: { table?: string } }>("/api/analytics/modules", async (req, reply) => {
