@@ -11,7 +11,9 @@
     "dev:website": "vp run website#dev",
     "start:website": "vp run website#preview",
     "start:api": "vp run api#start",
-    "build": "vp run --cache -r build"
+    "build": "vp run --cache -r build",
+    "test:e2e": "vp run e2e#test",
+    "test:e2e-ui": "vp run e2e#test:ui"
   },
   "devDependencies": {
     "vite-plus": "catalog:"

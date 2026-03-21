@@ -1,0 +1,16 @@
+{
+  "name": "@e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vp exec playwright test",
+    "test:ui": "vp exec playwright test --ui",
+    "install-browsers": "vp exec playwright install --with-deps chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}
