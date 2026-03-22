@@ -7,8 +7,8 @@ export function applyColumnFilters(
   return rows.filter((row) =>
     active.every(([col, val]) =>
       (typeof row[col] === "object"
-          ? JSON.stringify(row[col])
-          : String((row[col] ?? "") as string | number | boolean | bigint | symbol)
+        ? JSON.stringify(row[col])
+        : String((row[col] ?? "") as string | number | boolean | bigint | symbol)
       )
         .toLowerCase()
         .includes(val.toLowerCase()),

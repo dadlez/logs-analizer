@@ -1,5 +1,4 @@
 import type { FastifyInstance } from "fastify";
-import { Type } from "contract";
 import type { DbClient } from "../db";
 import { validateIdentifier } from "../utils";
 
@@ -10,12 +9,13 @@ export interface HistoryQueryParams {
   from?: string;
   to?: string;
   user_email?: string;
-  action_type?: number;
+  organization_id?: string;
 }
 
 export interface HistoryQueryDescriptor {
   table: string;
-  filters: Array<{ field: string; value: unknown }>;
+  whereFilters: Array<{ field: string; value: unknown }>;
+  havingFilters: Array<{ field: string; value: unknown }>;
   orderBy: { col: string; dir: "ASC" | "DESC" };
   limit: number;
   offset: number;
@@ -26,24 +26,24 @@ export function buildHistoryQuery(params: HistoryQueryParams): HistoryQueryDescr
   const limit = Math.min(100, Math.max(1, params.limit ?? 10));
   const offset = (page - 1) * limit;
 
-  const filters: Array<{ field: string; value: unknown }> = [];
-  if (params.from) filters.push({ field: "timestamp_from", value: params.from });
-  if (params.to) filters.push({ field: "timestamp_to", value: params.to });
-  if (params.user_email) filters.push({ field: "user_email", value: params.user_email });
-  if (params.action_type !== undefined) filters.push({ field: "type", value: params.action_type });
+  const whereFilters: Array<{ field: string; value: unknown }> = [];
+  const havingFilters: Array<{ field: string; value: unknown }> = [];
+
+  if (params.organization_id)
+    whereFilters.push({ field: "organization_id", value: params.organization_id });
+  if (params.user_email) whereFilters.push({ field: "user_email", value: params.user_email });
+  if (params.from) havingFilters.push({ field: "timestamp_from", value: params.from });
+  if (params.to) havingFilters.push({ field: "timestamp_to", value: params.to });
 
   return {
     table: params.table,
-    filters,
+    whereFilters,
+    havingFilters,
     orderBy: { col: "started_at", dir: "DESC" },
     limit,
     offset,
   };
 }
-
-const VALID_ACTION_TYPES = new Set(
-  Object.values(Type).filter((v): v is number => typeof v === "number"),
-);
 
 export function historyRoute(fastify: FastifyInstance, db: DbClient) {
   fastify.get<{
@@ -54,23 +54,13 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
       from?: string;
       to?: string;
       user_email?: string;
-      action_type?: string;
+      organization_id?: string;
     };
   }>("/api/history", async (req, reply) => {
-    const { table, page, limit, from, to, user_email, action_type } = req.query;
+    const { table, page, limit, from, to, user_email, organization_id } = req.query;
 
     if (!table) {
       return reply.status(400).send({ error: "table param is required" });
-    }
-
-    let parsedActionType: number | undefined;
-    if (action_type !== undefined) {
-      parsedActionType = parseInt(action_type, 10);
-      if (isNaN(parsedActionType) || !VALID_ACTION_TYPES.has(parsedActionType)) {
-        return reply
-          .status(400)
-          .send({ error: "action_type must be a valid Type enum value (1, 2, or 3)" });
-      }
     }
 
     try {
@@ -86,30 +76,39 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
       from,
       to,
       user_email,
-      action_type: parsedActionType,
+      organization_id,
     });
 
-    const conditions: string[] = [];
-    const params: unknown[] = [];
+    const whereConditions: string[] = [];
+    const whereParams: unknown[] = [];
 
-    for (const f of q.filters) {
-      if (f.field === "timestamp_from") {
-        params.push(f.value);
-        conditions.push(`MIN(created_date) >= $${params.length}`);
-      } else if (f.field === "timestamp_to") {
-        params.push(f.value);
-        conditions.push(`MIN(created_date) <= $${params.length}`);
+    for (const f of q.whereFilters) {
+      if (f.field === "organization_id") {
+        whereParams.push(f.value);
+        whereConditions.push(`organization_id = $${whereParams.length}`);
       } else if (f.field === "user_email") {
-        params.push(f.value);
-        conditions.push(`user_email ILIKE $${params.length}`);
-      } else if (f.field === "type") {
-        params.push(f.value);
-        conditions.push(`MAX(type) = $${params.length}`);
+        whereParams.push(f.value);
+        whereConditions.push(`user_email ILIKE $${whereParams.length}`);
       }
     }
 
-    const havingClause = conditions.length > 0 ? `HAVING ${conditions.join(" AND ")}` : "";
-    const dataParams = [...params, q.limit, q.offset];
+    const havingConditions: string[] = [];
+    const allFilterParams: unknown[] = [...whereParams];
+
+    for (const f of q.havingFilters) {
+      if (f.field === "timestamp_from") {
+        allFilterParams.push(f.value);
+        havingConditions.push(`MIN(created_date) >= $${allFilterParams.length}`);
+      } else if (f.field === "timestamp_to") {
+        allFilterParams.push(f.value);
+        havingConditions.push(`MIN(created_date) <= $${allFilterParams.length}`);
+      }
+    }
+
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : "";
+    const havingClause =
+      havingConditions.length > 0 ? `HAVING ${havingConditions.join(" AND ")}` : "";
+    const dataParams = [...allFilterParams, q.limit, q.offset];
 
     // ContractHeaderEntity = 1
     const dataSql = `
@@ -123,6 +122,7 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
         COUNT(*)::int AS entity_count,
         array_agg(DISTINCT entity_type::int) AS entity_types
       FROM "${table}"
+      ${whereClause}
       GROUP BY correlation_id
       ${havingClause}
       ORDER BY started_at DESC
@@ -134,6 +134,7 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
       FROM (
         SELECT correlation_id
         FROM "${table}"
+        ${whereClause}
         GROUP BY correlation_id
         ${havingClause}
       ) subq
@@ -141,7 +142,7 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
 
     const [rows, countResult] = await Promise.all([
       db.unsafe(dataSql, dataParams as string[]),
-      db.unsafe(countSql, params as string[]) as Promise<{ count: string }[]>,
+      db.unsafe(countSql, allFilterParams as string[]) as Promise<{ count: string }[]>,
     ]);
 
     const data = (rows as Array<Record<string, unknown>>).map((row) => {

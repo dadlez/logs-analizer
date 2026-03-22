@@ -24,17 +24,6 @@ describe("buildHistoryQuery", () => {
     expect(query.orderBy).toEqual({ col: "started_at", dir: "DESC" });
   });
 
-  test("should include action_type filter when action_type param is provided", () => {
-    // given
-    const params = { table: "audit_log", action_type: 3 };
-
-    // when
-    const query = buildHistoryQuery(params);
-
-    // then
-    expect(query.filters).toContainEqual({ field: "type", value: 3 });
-  });
-
   test("should calculate correct offset when page 2 is requested", () => {
     // given
     const params = { table: "audit_log", page: 2 };
@@ -46,7 +35,7 @@ describe("buildHistoryQuery", () => {
     expect(query.offset).toBe(10);
   });
 
-  test("should include user_email filter when user_email param is provided", () => {
+  test("should include user_email filter in whereFilters when user_email param is provided", () => {
     // given
     const params = { table: "audit_log", user_email: "a@b.com" };
 
@@ -54,6 +43,17 @@ describe("buildHistoryQuery", () => {
     const query = buildHistoryQuery(params);
 
     // then
-    expect(query.filters).toContainEqual({ field: "user_email", value: "a@b.com" });
+    expect(query.whereFilters).toContainEqual({ field: "user_email", value: "a@b.com" });
+  });
+
+  test("should include organization_id filter in whereFilters when organization_id param is provided", () => {
+    // given
+    const params = { table: "audit_log", organization_id: "org-123" };
+
+    // when
+    const query = buildHistoryQuery(params);
+
+    // then
+    expect(query.whereFilters).toContainEqual({ field: "organization_id", value: "org-123" });
   });
 });

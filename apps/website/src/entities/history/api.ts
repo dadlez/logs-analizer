@@ -8,7 +8,7 @@ export interface HistoryParams {
   from?: string;
   to?: string;
   user_email?: string;
-  action_type?: number;
+  organization_id?: string;
 }
 
 export function fetchHistory(params: HistoryParams): Promise<HistoryResponse> {
@@ -19,6 +19,6 @@ export function fetchHistory(params: HistoryParams): Promise<HistoryResponse> {
   if (params.from) qs.set("from", params.from);
   if (params.to) qs.set("to", params.to);
   if (params.user_email) qs.set("user_email", params.user_email);
-  if (params.action_type !== undefined) qs.set("action_type", String(params.action_type));
+  if (params.organization_id) qs.set("organization_id", params.organization_id);
   return apiFetch<HistoryResponse>(`/api/history?${qs.toString()}`);
 }

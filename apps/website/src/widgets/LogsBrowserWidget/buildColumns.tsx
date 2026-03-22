@@ -1,5 +1,5 @@
-import type {SchemaTable} from "../../entities/schema";
-import type {ColumnDef} from "@tanstack/react-table";
+import type { SchemaTable } from "../../entities/schema";
+import type { ColumnDef } from "@tanstack/react-table";
 import Box from "@mui/material/Box";
 
 const MAX_CELL_LENGTH = 120;

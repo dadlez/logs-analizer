@@ -1,17 +1,13 @@
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
 import { useTheme } from "@mui/material/styles";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable, Badge, BadgePillList } from "../../shared/ui/index.ts";
 import { useHistoryQuery } from "../../entities/history/index.ts";
 import { useSearch, useNavigate } from "@tanstack/react-router";
-import { TypeLabels, TypeOptions } from "../../entities/log/index.ts";
+import { TypeLabels } from "../../entities/log/index.ts";
 import {
   resolveModuleLabel,
   resolveEventColor,
@@ -98,14 +94,13 @@ export function ActivityHistoryWidget() {
 
   const page = Number(search["page"] ?? 1);
   const userEmail = (search["user_email"] as string) ?? "";
-  const actionType =
-    search["action_type"] !== undefined ? Number(search["action_type"]) : undefined;
+  const organizationId = (search["organization_id"] as string) ?? "";
 
   const { data, isLoading } = useHistoryQuery({
     table,
     page,
     user_email: userEmail || undefined,
-    action_type: actionType,
+    organization_id: organizationId || undefined,
   });
 
   function setSearch(partial: Record<string, unknown>) {
@@ -122,36 +117,22 @@ export function ActivityHistoryWidget() {
       <Box sx={{ mb: 2, display: "flex", gap: 2, flexWrap: "wrap", alignItems: "flex-end" }}>
         <TextField
           size="small"
+          label="Organization ID"
+          value={organizationId}
+          onChange={(e) => setSearch({ organization_id: e.target.value, page: 1 })}
+          inputProps={{ "data-testid": "filter-organization-id" }}
+        />
+        <TextField
+          size="small"
           label="User Email"
           value={userEmail}
           onChange={(e) => setSearch({ user_email: e.target.value, page: 1 })}
           inputProps={{ "data-testid": "filter-user-email" }}
         />
-        <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel>Action Type</InputLabel>
-          <Select
-            value={actionType !== undefined ? String(actionType) : ""}
-            label="Action Type"
-            onChange={(e) =>
-              setSearch({
-                action_type: e.target.value ? Number(e.target.value) : undefined,
-                page: 1,
-              })
-            }
-            inputProps={{ "data-testid": "filter-action-type" }}
-          >
-            <MenuItem value="">All</MenuItem>
-            {TypeOptions.map((opt) => (
-              <MenuItem key={opt.value} value={String(opt.value)}>
-                {opt.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
         <Button
           variant="outlined"
           size="small"
-          onClick={() => setSearch({ user_email: "", action_type: undefined, page: 1 })}
+          onClick={() => setSearch({ organization_id: "", user_email: "", page: 1 })}
           data-testid="btn-clear-filters"
         >
           Clear

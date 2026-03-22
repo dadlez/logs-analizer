@@ -24,19 +24,6 @@ describe("GET /api/history", () => {
     expect(Array.isArray(body.data)).toBe(true);
   });
 
-  test("should pass action_type filter to db when action_type query param is provided", async () => {
-    // given
-    mockDb.unsafe.mockResolvedValue([]);
-    const app = buildApp({ db: mockDb, nodeEnv: "test" });
-
-    // when
-    await app.inject({ method: "GET", url: "/api/history?table=audit_log&action_type=3" });
-
-    // then
-    const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
-    expect(calls.some(([, params]) => Array.isArray(params) && params.includes(3))).toBe(true);
-  });
-
   test("should pass user_email filter to db when user_email query param is provided", async () => {
     // given
     mockDb.unsafe.mockResolvedValue([]);
@@ -55,18 +42,21 @@ describe("GET /api/history", () => {
     ).toBe(true);
   });
 
-  test("should return 400 when action_type param is not a valid Type enum value", async () => {
+  test("should pass organization_id filter to db when organization_id query param is provided", async () => {
     // given
+    mockDb.unsafe.mockResolvedValue([]);
     const app = buildApp({ db: mockDb, nodeEnv: "test" });
 
     // when
-    const res = await app.inject({
+    await app.inject({
       method: "GET",
-      url: "/api/history?table=audit_log&action_type=99",
+      url: "/api/history?table=audit_log&organization_id=org-123",
     });
 
     // then
-    expect(res.statusCode).toBe(400);
-    expect(mockDb.unsafe).not.toHaveBeenCalled();
+    const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
+    expect(calls.some(([, params]) => Array.isArray(params) && params.includes("org-123"))).toBe(
+      true,
+    );
   });
 });

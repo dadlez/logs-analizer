@@ -1,14 +1,14 @@
-import {useState} from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import {DataTable} from "../../shared/ui";
-import {useLogsQuery} from "../../entities/log";
-import {useSchemaQuery} from "../../entities/schema/index.ts";
-import {TableSelector, useTableSelection} from "../../features/select-table";
-import {useLogFilters} from "../../features/filter-logs";
-import {useCorrelationNavigation} from "../../features/view-correlation";
-import {buildColumns} from "./buildColumns.tsx";
-import {applyColumnFilters} from "./applyColumnFilters.ts";
+import { DataTable } from "../../shared/ui";
+import { useLogsQuery } from "../../entities/log";
+import { useSchemaQuery } from "../../entities/schema/index.ts";
+import { TableSelector, useTableSelection } from "../../features/select-table";
+import { useLogFilters } from "../../features/filter-logs";
+import { useCorrelationNavigation } from "../../features/view-correlation";
+import { buildColumns } from "./buildColumns.tsx";
+import { applyColumnFilters } from "./applyColumnFilters.ts";
 
 export function LogsBrowserWidget() {
   const { table } = useTableSelection();
