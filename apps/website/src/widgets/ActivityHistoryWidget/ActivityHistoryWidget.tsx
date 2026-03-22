@@ -20,6 +20,17 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
   const {
     palette: { colors },
   } = useTheme();
+  const colOrganizationId: ColumnDef<HistoryEntry, string> = {
+    accessorKey: "organization_id",
+    header: "Organization ID",
+    cell: (info) => (
+      <Box
+        sx={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+      >
+        {info.getValue()}
+      </Box>
+    ),
+  };
   const colUserEmail: ColumnDef<HistoryEntry, string> = {
     accessorKey: "user_email",
     header: "User Email",
@@ -76,6 +87,7 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
     },
   };
   return [
+    colOrganizationId,
     colUserEmail,
     colActionType,
     colContractNumber,

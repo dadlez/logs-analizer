@@ -114,7 +114,8 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
     const dataSql = `
       SELECT
         correlation_id,
-        MAX(user_email) AS user_email,
+        organization_id,
+        user_email,
         MAX(type)::int AS action_type,
         MAX(CASE WHEN entity_type = 1 THEN primary_key ELSE NULL END) AS contract_number,
         MIN(created_date) AS started_at,
@@ -123,7 +124,7 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
         array_agg(DISTINCT entity_type::int) AS entity_types
       FROM "${table}"
       ${whereClause}
-      GROUP BY correlation_id
+      GROUP BY correlation_id, organization_id, user_email
       ${havingClause}
       ORDER BY started_at DESC
       LIMIT $${dataParams.length - 1} OFFSET $${dataParams.length}

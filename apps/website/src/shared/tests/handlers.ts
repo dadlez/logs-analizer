@@ -107,6 +107,7 @@ export const mockCorrelationDetail: CorrelationDetailResponse = {
 
 export const mockHistoryEntry = {
   correlation_id: "corr-001",
+  organization_id: "org-001",
   user_email: "test@example.com",
   action_type: 1,
   contract_number: "K/2026/001",

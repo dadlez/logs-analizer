@@ -115,6 +115,7 @@ export interface TimelineBucket {
 // History
 export interface HistoryEntry {
   correlation_id: string;
+  organization_id: string;
   user_email: string;
   action_type: Type;
   contract_number: string | null;

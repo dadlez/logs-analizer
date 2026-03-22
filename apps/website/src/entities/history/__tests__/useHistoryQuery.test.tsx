@@ -17,7 +17,11 @@ describe("useHistoryQuery", () => {
     // then
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     const data = result.current.data;
-    expect(data?.data[0]).toMatchObject({ user_email: "test@example.com", action_type: 1 });
+    expect(data?.data[0]).toMatchObject({
+      organization_id: "org-001",
+      user_email: "test@example.com",
+      action_type: 1,
+    });
   });
 
   test("should return loading state when request is in flight", () => {
