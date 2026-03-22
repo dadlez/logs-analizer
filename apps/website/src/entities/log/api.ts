@@ -1,5 +1,11 @@
-import { apiFetch } from "../../shared/api/index.ts";
-import type { LogsResponse } from "contract";
+import { apiFetch } from "../../shared/api";
+
+export interface RawLogsResponse {
+  data: Record<string, unknown>[];
+  total: number;
+  page: number;
+  limit: number;
+}
 
 export interface LogsParams {
   table: string;
@@ -15,7 +21,7 @@ export interface LogsParams {
   sort_dir?: "asc" | "desc";
 }
 
-export function fetchLogs(params: LogsParams): Promise<LogsResponse> {
+export function fetchLogs(params: LogsParams): Promise<RawLogsResponse> {
   const qs = new URLSearchParams();
   qs.set("table", params.table);
   if (params.page) qs.set("page", String(params.page));
@@ -28,5 +34,5 @@ export function fetchLogs(params: LogsParams): Promise<LogsResponse> {
   if (params.search) qs.set("search", params.search);
   if (params.sort_col) qs.set("sort_col", params.sort_col);
   if (params.sort_dir) qs.set("sort_dir", params.sort_dir);
-  return apiFetch<LogsResponse>(`/api/logs?${qs.toString()}`);
+  return apiFetch<RawLogsResponse>(`/api/logs?${qs.toString()}`);
 }

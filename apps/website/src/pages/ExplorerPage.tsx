@@ -1,5 +1,5 @@
-import { PageContainer } from "../shared/ui/index.ts";
-import { LogsBrowserWidget } from "../widgets/LogsBrowserWidget/index.ts";
+import { PageContainer } from "../shared/ui";
+import { LogsBrowserWidget } from "../widgets/LogsBrowserWidget";
 
 export function ExplorerPage() {
   return (
