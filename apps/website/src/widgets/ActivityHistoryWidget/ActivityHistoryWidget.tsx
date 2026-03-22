@@ -24,9 +24,7 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
     accessorKey: "organization_id",
     header: "Organization ID",
     cell: (info) => (
-      <Box
-        sx={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-      >
+      <Box sx={{ maxWidth: 160, wordBreak: "break-all" }}>
         {info.getValue()}
       </Box>
     ),
@@ -35,9 +33,7 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
     accessorKey: "user_email",
     header: "User Email",
     cell: (info) => (
-      <Box
-        sx={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-      >
+      <Box sx={{ maxWidth: 160, wordBreak: "break-all" }}>
         {info.getValue()}
       </Box>
     ),
@@ -54,9 +50,7 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
     accessorKey: "contract_number",
     header: "Contract",
     cell: (info) => (
-      <Box
-        sx={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-      >
+      <Box sx={{ maxWidth: 120, wordBreak: "break-all" }}>
         {info.getValue() ?? ""}
       </Box>
     ),
