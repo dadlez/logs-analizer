@@ -2,7 +2,10 @@ import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useTheme } from "@mui/material/styles";
+import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable, Badge, BadgePillList } from "../../shared/ui/index.ts";
 import { useHistoryQuery } from "../../entities/history/index.ts";
@@ -94,6 +97,7 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
 
 export function ActivityHistoryWidget() {
   const columns = useColumns();
+  const [showOrgId, setShowOrgId] = useState(true);
   const table = "audit_log";
   const search = useSearch({ strict: false }) as Record<string, unknown>;
   const navigate = useNavigate();
@@ -143,6 +147,15 @@ export function ActivityHistoryWidget() {
         >
           Clear
         </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => setShowOrgId((v) => !v)}
+          data-testid="btn-toggle-org-id"
+          startIcon={showOrgId ? <VisibilityIcon /> : <VisibilityOffIcon />}
+        >
+          {showOrgId ? "Hide" : "Show"} Organization ID
+        </Button>
       </Box>
 
       <DataTable
@@ -154,6 +167,7 @@ export function ActivityHistoryWidget() {
         limit={data?.limit ?? 10}
         onPrevPage={() => setSearch({ page: page - 1 })}
         onNextPage={() => setSearch({ page: page + 1 })}
+        columnVisibility={{ organization_id: showOrgId }}
       />
     </Box>
   );

@@ -1,4 +1,10 @@
-import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from "@tanstack/react-table";
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+  type ColumnDef,
+  type VisibilityState,
+} from "@tanstack/react-table";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
@@ -25,6 +31,7 @@ interface DataTableProps<T extends object> {
   sortCol?: string;
   sortDir?: "asc" | "desc";
   onRowClick?: (row: T) => void;
+  columnVisibility?: VisibilityState;
 }
 
 export function DataTable<T extends object>({
@@ -40,6 +47,7 @@ export function DataTable<T extends object>({
   sortCol,
   sortDir,
   onRowClick,
+  columnVisibility,
 }: DataTableProps<T>) {
   const table = useReactTable({
     data,
@@ -47,6 +55,7 @@ export function DataTable<T extends object>({
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
     manualSorting: true,
+    state: { columnVisibility },
   });
 
   if (isLoading) return <LoadingSpinner />;
