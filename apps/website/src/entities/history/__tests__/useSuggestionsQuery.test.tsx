@@ -12,7 +12,7 @@ function wrapper({ children }: { children: ReactNode }) {
 describe("useSuggestionsQuery", () => {
   test("should return suggestion strings when API responds for user_email field", async () => {
     // given / when
-    const { result } = renderHook(() => useSuggestionsQuery("user_email", ""), { wrapper });
+    const { result } = renderHook(() => useSuggestionsQuery("user_email"), { wrapper });
 
     // then
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -22,7 +22,7 @@ describe("useSuggestionsQuery", () => {
 
   test("should be in loading state before API responds", () => {
     // given / when
-    const { result } = renderHook(() => useSuggestionsQuery("organization_id", ""), { wrapper });
+    const { result } = renderHook(() => useSuggestionsQuery("organization_id"), { wrapper });
 
     // then
     expect(result.current.isLoading).toBe(true);
