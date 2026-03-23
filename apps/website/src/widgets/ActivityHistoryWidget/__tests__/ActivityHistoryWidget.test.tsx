@@ -57,7 +57,7 @@ describe("ActivityHistoryWidget", () => {
     await waitFor(() => expect(screen.getByTestId("history-table")).toBeDefined());
   });
 
-  test("should show pagination button when history loads", async () => {
+  test("should show next-page pagination button when history loads", async () => {
     // given
     const testRouter = createTestRouter(() => (
       <Wrapper>
@@ -68,7 +68,7 @@ describe("ActivityHistoryWidget", () => {
     // when
     render(<RouterProvider router={testRouter} />);
 
-    // wait for table, select a table value
-    await waitFor(() => expect(screen.getByTestId("history-table")).toBeDefined());
+    // then
+    await waitFor(() => expect(screen.getByTestId("btn-next-page")).toBeDefined());
   });
 });

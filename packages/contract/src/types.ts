@@ -112,6 +112,13 @@ export interface TimelineBucket {
   event_count: number;
 }
 
+// Suggestions
+export type SuggestionField = "user_email" | "organization_id";
+
+export interface SuggestionsResponse {
+  data: string[];
+}
+
 // History
 export interface HistoryEntry {
   correlation_id: string;

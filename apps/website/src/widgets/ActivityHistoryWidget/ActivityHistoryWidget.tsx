@@ -1,14 +1,13 @@
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DataTable, Badge, BadgePillList } from "../../shared/ui/index.ts";
-import { useHistoryQuery } from "../../entities/history/index.ts";
+import { DataTable, Badge, BadgePillList, AsyncAutocomplete } from "../../shared/ui/index.ts";
+import { useHistoryQuery, useSuggestionsQuery, parseContractId } from "../../entities/history/index.ts";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { TypeLabels } from "../../entities/log/index.ts";
 import {
@@ -26,20 +25,12 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
   const colOrganizationId: ColumnDef<HistoryEntry, string> = {
     accessorKey: "organization_id",
     header: "Organization ID",
-    cell: (info) => (
-      <Box sx={{ maxWidth: 160, wordBreak: "break-all" }}>
-        {info.getValue()}
-      </Box>
-    ),
+    cell: (info) => <Box sx={{ maxWidth: 160, wordBreak: "break-all" }}>{info.getValue()}</Box>,
   };
   const colUserEmail: ColumnDef<HistoryEntry, string> = {
     accessorKey: "user_email",
     header: "User Email",
-    cell: (info) => (
-      <Box sx={{ maxWidth: 160, wordBreak: "break-all" }}>
-        {info.getValue()}
-      </Box>
-    ),
+    cell: (info) => <Box sx={{ maxWidth: 160, wordBreak: "break-all" }}>{info.getValue()}</Box>,
   };
   const colActionType: ColumnDef<HistoryEntry, Type> = {
     accessorKey: "action_type",
@@ -53,9 +44,7 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
     accessorKey: "contract_number",
     header: "Contract",
     cell: (info) => (
-      <Box sx={{ maxWidth: 120, wordBreak: "break-all" }}>
-        {info.getValue() ?? ""}
-      </Box>
+      <Box sx={{ maxWidth: 120, wordBreak: "break-all" }}>{parseContractId(info.getValue())}</Box>
     ),
   };
   const colStartedAt: ColumnDef<HistoryEntry, string> = {
@@ -103,14 +92,20 @@ export function ActivityHistoryWidget() {
   const navigate = useNavigate();
 
   const page = Number(search["page"] ?? 1);
-  const userEmail = (search["user_email"] as string) ?? "";
-  const organizationId = (search["organization_id"] as string) ?? "";
+
+  const [emailInput, setEmailInput] = useState((search["user_email"] as string) ?? "");
+  const [orgInput, setOrgInput] = useState((search["organization_id"] as string) ?? "");
+  const [emailFilter, setEmailFilter] = useState((search["user_email"] as string) ?? "");
+  const [orgFilter, setOrgFilter] = useState((search["organization_id"] as string) ?? "");
+
+  const { data: emailSuggestions, isFetching: emailLoading } = useSuggestionsQuery("user_email");
+  const { data: orgSuggestions, isFetching: orgLoading } = useSuggestionsQuery("organization_id");
 
   const { data, isLoading } = useHistoryQuery({
     table,
     page,
-    user_email: userEmail || undefined,
-    organization_id: organizationId || undefined,
+    user_email: emailFilter || undefined,
+    organization_id: orgFilter || undefined,
   });
 
   function setSearch(partial: Record<string, unknown>) {
@@ -125,24 +120,54 @@ export function ActivityHistoryWidget() {
         Showing data from the audit_log table
       </Alert>
       <Box sx={{ mb: 2, display: "flex", gap: 2, flexWrap: "wrap", alignItems: "flex-end" }}>
-        <TextField
-          size="small"
+        <AsyncAutocomplete
           label="Organization ID"
-          value={organizationId}
-          onChange={(e) => setSearch({ organization_id: e.target.value, page: 1 })}
-          inputProps={{ "data-testid": "filter-organization-id" }}
+          options={orgSuggestions?.data ?? []}
+          loading={orgLoading}
+          value={orgInput}
+          onChange={(value) => {
+            setOrgInput(value);
+            if (!value) {
+              setOrgFilter("");
+              setSearch({ organization_id: "", page: 1 });
+            }
+          }}
+          onSelect={(value) => {
+            setOrgFilter(value);
+            setSearch({ organization_id: value, page: 1 });
+          }}
+          inputHtmlProps={{ "data-testid": "filter-organization-id" }}
+          minWidth={240}
         />
-        <TextField
-          size="small"
+        <AsyncAutocomplete
           label="User Email"
-          value={userEmail}
-          onChange={(e) => setSearch({ user_email: e.target.value, page: 1 })}
-          inputProps={{ "data-testid": "filter-user-email" }}
+          options={emailSuggestions?.data ?? []}
+          loading={emailLoading}
+          value={emailInput}
+          onChange={(value) => {
+            setEmailInput(value);
+            if (!value) {
+              setEmailFilter("");
+              setSearch({ user_email: "", page: 1 });
+            }
+          }}
+          onSelect={(value) => {
+            setEmailFilter(value);
+            setSearch({ user_email: value, page: 1 });
+          }}
+          inputHtmlProps={{ "data-testid": "filter-user-email" }}
+          minWidth={240}
         />
         <Button
           variant="outlined"
           size="small"
-          onClick={() => setSearch({ organization_id: "", user_email: "", page: 1 })}
+          onClick={() => {
+            setEmailInput("");
+            setOrgInput("");
+            setEmailFilter("");
+            setOrgFilter("");
+            setSearch({ organization_id: "", user_email: "", page: 1 });
+          }}
           data-testid="btn-clear-filters"
         >
           Clear

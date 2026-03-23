@@ -59,4 +59,23 @@ describe("GET /api/history", () => {
       true,
     );
   });
+
+  test("should pass from and to params to db when date range is provided", async () => {
+    // given
+    mockDb.unsafe.mockResolvedValue([]);
+    const app = buildApp({ db: mockDb, nodeEnv: "test" });
+
+    // when
+    await app.inject({
+      method: "GET",
+      url: "/api/history?table=audit_log&from=2026-01-01&to=2026-01-31",
+    });
+
+    // then
+    const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
+    const allParams = calls.flatMap(([, params]) => (Array.isArray(params) ? params : []));
+    expect(allParams).toContain("2026-01-01");
+    expect(allParams).toContain("2026-01-31");
+  });
+
 });

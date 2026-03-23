@@ -7,6 +7,7 @@ import { logsRoute } from "./routes/logs";
 import { correlationsRoute } from "./routes/correlations";
 import { analyticsRoute } from "./routes/analytics";
 import { historyRoute } from "./routes/history";
+import { suggestionsRoute } from "./routes/suggestions";
 import type { DbClient } from "./db";
 import type { NodeEnv } from "./config";
 
@@ -47,6 +48,7 @@ export function buildApp(options: { db: DbClient; nodeEnv: NodeEnv }) {
     correlationsRoute(app, options.db);
     analyticsRoute(app, options.db);
     historyRoute(app, options.db);
+    suggestionsRoute(app, options.db);
   });
 
   return fastify;

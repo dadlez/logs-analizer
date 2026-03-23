@@ -76,4 +76,31 @@ describe("GET /api/analytics", () => {
     const calls = mockDb.unsafe.mock.calls as [string, unknown[]][];
     expect(calls.some(([, params]) => Array.isArray(params) && params.includes("day"))).toBe(true);
   });
+
+  test("should return 200 when GET /api/analytics/event-types is called", async () => {
+    // given
+    mockDb.unsafe.mockResolvedValue([]);
+    const app = buildApp({ db: mockDb, nodeEnv: "test" });
+
+    // when
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/analytics/event-types?table=audit_log",
+    });
+
+    // then
+    expect(res.statusCode).toBe(200);
+  });
+
+  test("should return 400 when table param is missing from analytics endpoint", async () => {
+    // given
+    const app = buildApp({ db: mockDb, nodeEnv: "test" });
+
+    // when
+    const res = await app.inject({ method: "GET", url: "/api/analytics/modules" });
+
+    // then
+    expect(res.statusCode).toBe(400);
+    expect(mockDb.unsafe).not.toHaveBeenCalled();
+  });
 });

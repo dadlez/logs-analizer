@@ -168,4 +168,8 @@ export const handlers = [
   http.get("/api/history", () => {
     return HttpResponse.json(mockHistoryResponse);
   }),
+
+  http.get("/api/history/suggestions", () => {
+    return HttpResponse.json({ data: ["test@example.com", "admin@example.com"] });
+  }),
 ];

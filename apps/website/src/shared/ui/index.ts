@@ -12,3 +12,4 @@ export { DataTable } from "./table/DataTable.tsx";
 export { HeatmapGrid } from "./table/HeatmapGrid.tsx";
 export { FilterBar } from "./form/FilterBar.tsx";
 export type { FilterBarField } from "./form/FilterBar.tsx";
+export { AsyncAutocomplete } from "./form/AsyncAutocomplete.tsx";
