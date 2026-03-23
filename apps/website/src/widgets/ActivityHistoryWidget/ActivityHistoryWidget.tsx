@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable, Badge, BadgePillList, AsyncAutocomplete } from "../../shared/ui/index.ts";
-import { useHistoryQuery, useSuggestionsQuery, parseContractId } from "../../entities/history/index.ts";
+import { useHistoryQuery, useSuggestionsQuery } from "../../entities/history/index.ts";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { TypeLabels } from "../../entities/log/index.ts";
 import {
@@ -44,7 +44,7 @@ function useColumns(): ColumnDef<HistoryEntry>[] {
     accessorKey: "contract_number",
     header: "Contract",
     cell: (info) => (
-      <Box sx={{ maxWidth: 120, wordBreak: "break-all" }}>{parseContractId(info.getValue())}</Box>
+      <Box sx={{ maxWidth: 120, wordBreak: "break-all" }}>{info.getValue() ?? ""}</Box>
     ),
   };
   const colStartedAt: ColumnDef<HistoryEntry, string> = {

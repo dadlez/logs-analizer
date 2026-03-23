@@ -117,7 +117,7 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
         organization_id,
         user_email,
         MAX(type)::int AS action_type,
-        MAX(CASE WHEN entity_type = 1 THEN primary_key ELSE NULL END) AS contract_number,
+        MIN(entity_id::text) FILTER (WHERE entity_type = 1) AS contract_number,
         MIN(created_date) AS started_at,
         EXTRACT(EPOCH FROM (MAX(created_date) - MIN(created_date)) * 1000)::int AS duration_ms,
         COUNT(*)::int AS entity_count,
@@ -146,17 +146,7 @@ export function historyRoute(fastify: FastifyInstance, db: DbClient) {
       db.unsafe(countSql, allFilterParams as string[]) as Promise<{ count: string }[]>,
     ]);
 
-    const data = (rows as Array<Record<string, unknown>>).map((row) => {
-      if (typeof row["contract_number"] === "string") {
-        try {
-          const parsed = JSON.parse(row["contract_number"]) as { id?: string };
-          row["contract_number"] = parsed.id ?? row["contract_number"];
-        } catch {
-          // leave as-is if not valid JSON
-        }
-      }
-      return row;
-    });
+    const data = rows as Array<Record<string, unknown>>;
 
     return reply.send({
       data,
