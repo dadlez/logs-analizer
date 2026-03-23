@@ -14,26 +14,32 @@ test.describe("Domain page", () => {
     await expect(page.locator("[data-testid^='module-card-']").first()).toBeVisible();
   });
 
-  test("should show flows tab content when flows tab is clicked", async ({ page }) => {
+  test("should show co-occurrence tab content when co-occurrence tab is clicked", async ({
+    page,
+  }) => {
     // given
     await page.goto(`/domain?table=${TABLE}`);
-    await expect(page.getByRole("tab", { name: "Flows" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Co-occurrence" })).toBeVisible();
 
     // when
-    await page.getByRole("tab", { name: "Flows" }).click();
+    await page.getByRole("tab", { name: "Co-occurrence" }).click();
 
     // then
-    await expect(page.locator("[data-testid^='flow-sequence-']").first()).toBeVisible();
+    await expect(page.getByText("Raw co-occurrence counts")).toBeVisible();
   });
 
-  test("should show event types tab content when event types tab is clicked", async ({ page }) => {
+  test("should show cascade patterns tab content when cascade patterns tab is clicked", async ({
+    page,
+  }) => {
     // given
     await page.goto(`/domain?table=${TABLE}`);
 
     // when
-    await page.getByRole("tab", { name: "Event Types" }).click();
+    await page.getByRole("tab", { name: "Cascade Patterns" }).click();
 
     // then
-    await expect(page.locator("text=Count:").first()).toBeVisible();
+    await expect(
+      page.getByText("Multi-module transaction patterns ordered by frequency"),
+    ).toBeVisible();
   });
 });

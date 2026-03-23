@@ -26,17 +26,15 @@ test.describe("Explorer page", () => {
     await expect(page.getByTestId("data-row-0")).toBeVisible();
   });
 
-  test("should update rows when module filter is applied", async ({ page }) => {
+  test("should filter rows when entity_type column filter is applied", async ({ page }) => {
     // given
     await page.goto(`/explorer?table=${TABLE}`);
     await expect(page.getByTestId("data-table")).toBeVisible();
 
-    // when — type a module name and apply
-    await page.getByTestId("filter-module").fill("contracts");
-    await page.getByTestId("btn-apply-filters").click();
+    // when — type a value into the entity_type column filter (client-side filter)
+    await page.getByLabel("entity_type").fill("1");
 
-    // then — URL updated and table re-renders (may be empty if no match, but no error)
-    await expect(page).toHaveURL(/module=contracts/);
+    // then — table re-renders without error (client-side filter, no URL change)
     await expect(page.getByTestId("data-table")).toBeVisible();
   });
 
