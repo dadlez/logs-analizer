@@ -12,6 +12,8 @@
     "start:website": "vp run website#preview",
     "start:api": "vp run api#start",
     "build": "vp run --cache -r build",
+    "test": "vp run api#test && vp run website#test",
+    "e2e:install-browsers": "vp run e2e#install-browsers",
     "test:e2e": "vp run e2e#test",
     "test:e2e-ui": "vp run e2e#test:ui"
   },
