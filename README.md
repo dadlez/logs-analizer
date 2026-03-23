@@ -1,36 +1,44 @@
 # Vite+ Monorepo Starter
 
-A starter for creating a Vite+ monorepo.
+This app uses a vite-plus library for running the monorepo.
 
-## Development
+# Runing the app
 
-- Check everything is ready:
+Prerequsits: Node 22, pnpm package manager
 
-```bash
-vp run ready
+## Set environment
+Copy `apps/api/.env.example` into a `apps/api/.env` file and fill database url. 
+
+## Install dependencies
+```npm
+pnpm install
 ```
 
-- Run the tests:
-
-```bash
-vp run test -r
+## Start dev servers with a file watch
+```npm
+pnpm run dev:api
+pnpm run dev:website
 ```
 
-- Build the monorepo:
-
-```bash
-vp run build -r
+## Build and start local servers
+```npm
+pnpm run build
+pnpm run start:api
+pnpm run start:website
 ```
 
-- Run the development server:
-
-```bash
-vp run dev
+## Run unit tests
+```npm
+pnpm run test
 ```
 
-===========
+## Run e2e tests
 
-# Assumptions
-
-- the UI should allow easy logs navigation and a domain discovery analysis.
-- log analysis should include per-service views, per-correlation_id views, maybe other.
+Install headless browser for playwright
+```npm
+e2e:install-browsers
+```
+Then run tests headless or with the playwright UI 
+```npm
+pnpm run test:e2e-ui
+```
