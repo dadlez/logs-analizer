@@ -1,6 +1,7 @@
 # Domain Discovery and Architecture Design proposal
 
 ## Assumptions
+
 Based on log analysis, some of the below assumptions led to further design decisions.
 
 - An annex cannot exist without a contract — it is part of the contract's history, not an independent domain entity.
@@ -14,18 +15,20 @@ Based on log analysis, some of the below assumptions led to further design decis
 - Eventual consistency is acceptable across all inter-bounded context relations.
 
 ## Context map
+
 ![context map](./assets/context-map-background.png)
 
 ## Bounded Contexts
 
 ### Contract Managament (maybe `Lifecycle` would be a better name?)
+
 **Entities:** `ContractHeaderEntity`, `AnnexHeaderEntity`, `AnnexChangeEntity`, `ContractFundingEntity`
 
 #### ContractHeaderEntity
 
 - Aggregate root of the entire BC. **`parent_id: null` always** — not a child of any other entity.
 - 1005 events, 1005 correlations. Never `Deleted` — soft delete via `DeletedDate`.
-- `ContractFlags` is a bitmask of contract state — it changes atomically with the creation of `ContractFunding` (id 2835–2836–2837, `correlation_id: aa2be7e4`). **This is the key technical reason to keep the Funding in BC for now.** Preferably should be moved to the Financial Settlements BC. 
+- `ContractFlags` is a bitmask of contract state — it changes atomically with the creation of `ContractFunding` (id 2835–2836–2837, `correlation_id: aa2be7e4`). **This is the key technical reason to keep the Funding in BC for now.** Preferably should be moved to the Financial Settlements BC.
 
 #### AnnexHeaderEntity and AnnexChangeEntity
 
@@ -81,8 +84,8 @@ Based on log analysis, some of the below assumptions led to further design decis
 - No domain logic of its own — File has no ubiquitous language, it is pure storage.
 - Soft delete via `DeletedDate` (id 2901: `DeletedDate: null → timestamp`).
 
-
 ## Bounded Contexts Relations
+
 ### Contract Lifecycle → Financial Settlements
 
 > Published Language (Contract) → Conformist (Financial Settlements)
@@ -110,7 +113,7 @@ Contract BC has no knowledge of `PaymentSchedule`. Financial Settlements subscri
 ### Audit Log — no domain relationship
 
 > No pattern — Audit Log is not a domain context, just infrastructure
- 
+
 - Communication | Async — event bus
 - Audit Log is not a Bounded Context. It is a passive observer that persists all events from the system.
 
@@ -128,4 +131,4 @@ Proposed solution: Saga pattern - compensation event.
 - `PaymentScheduleUpdateFailed` is published by `Financial Settlements`.
 - `Contract Managements` consumes the event and executes compensaton: soft-deletes of the annex.
 - `Audit log` consumes all events, under the same `correlation_id`.
-- Alerting system may be added for manual retries. 
+- Alerting system may be added for manual retries.

@@ -77,5 +77,4 @@ describe("GET /api/history", () => {
     expect(allParams).toContain("2026-01-01");
     expect(allParams).toContain("2026-01-31");
   });
-
 });
